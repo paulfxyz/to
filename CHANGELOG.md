@@ -6,6 +6,33 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 
 ---
 
+## [1.2.0] — 2026-04-03
+
+### Added
+- Deep inline documentation across all three PHP files (`settings.php`, `upload.php`, `send.php`):
+  - File-level docblocks explaining design rationale, security model, and flow
+  - Per-function PHPDoc with `@param` / `@return` types
+  - Inline comments on every non-obvious decision
+  - Named constants with explanatory comments (`CONFIG_FILE`, `CIPHER`, `RESEND_API_URL`, etc.)
+- "Lessons learned" section in README covering 7 real issues encountered during development:
+  1. Browser MediaRecorder blobs confuse PHP `finfo`
+  2. Resend rejects `null` `reply_to` (vs. omitting the key)
+  3. Resend domain verification must match the FROM address
+  4. FTP root ≠ web root on SiteGround multi-domain hosting
+  5. HTML email layout requires tables, not modern CSS
+  6. Cron-free cache cleanup via probabilistic execution
+  7. Static salt is acceptable for single-tenant encryption
+- Tech stack table in README with rationale column for each choice
+- Email layout ASCII diagram in README
+
+### Changed
+- README version badge bumped to `1.2.0`
+- `send.php`: extracted `RESEND_API_URL` and `CURL_TIMEOUT` as named constants
+- `send.php`: `reply_to` now omitted entirely from Resend payload when no contact provided (previously sent as `null`, which caused a Resend 400 error)
+- `settings.php`: extracted `PIN_SENTINEL` and `PIN_MIN_LEN` as named constants; `pinHmac()` helper extracted for reuse
+
+---
+
 ## [1.1.0] — 2026-04-03
 
 ### Added
@@ -46,7 +73,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 - **Send flow** (`send.php`):
   - Uploads audio and files to `/cache/` first via `upload.php`
   - Sends rich HTML + plain-text email via Resend REST API
-  - Email from `to@paulfleury.com` → `hello@paulfleury.com`
+  - Email from `to@up.paulfleury.com` → `hello@paulfleury.com`
   - Includes writing stats, full message, voice download button, and file list
 - **Upload handler** (`upload.php`):
   - Multipart file upload with MIME validation via `finfo`
