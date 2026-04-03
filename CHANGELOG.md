@@ -1,8 +1,22 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented in this file.
 
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.1.0] — 2026-04-03
+
+### Added
+- README badges: version, license, PHP version, Resend, live URL, no-dependencies
+- Quick-start section in README
+- Architecture diagram updated to include `.htaccess`
+- `INSTALL.md` reference added to README
+
+### Changed
+- README rewritten with badges, improved prose, and tighter structure
+- Version bumped to `1.1.0` across all files
 
 ---
 
@@ -51,3 +65,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Mobile bottom bar (visible on screens ≤768px)
 - Toast notification system
 - Responsive layout — sidebar hidden on mobile, replaced by bottom bar
+- `.htaccess` — blocks directory listing, protects `/config/`, sets PHP upload limits
