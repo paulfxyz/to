@@ -1,0 +1,15 @@
+# Prevent directory listing
+Options -Indexes
+
+# Block direct access to config directory
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^config/ - [F,L]
+</IfModule>
+
+# PHP settings for uploads (may be overridden by host)
+<IfModule mod_php.c>
+  php_value upload_max_filesize 50M
+  php_value post_max_size 110M
+  php_value max_execution_time 60
+</IfModule>
