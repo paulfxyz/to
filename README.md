@@ -236,3 +236,13 @@ MIT — see [LICENSE](LICENSE)
 ---
 
 *Built by [Paul Fleury](https://paulfleury.com)*
+
+---
+
+## Disclaimer
+
+This is 100% vibe coding.
+
+I don't pretend to be a software engineer, an artist, or a professional coder. I'm a former hacker turned Internet entrepreneur who has developed a very good working relationship with AI — tools like [Claude](https://claude.ai) and [Perplexity Computer](https://perplexity.ai). I describe what I want, I iterate, I ship. The code works, the product is real, and that's what matters.
+
+If you're a "real" developer reading this and cringing at something — fair enough. PRs welcome.
