@@ -32,7 +32,7 @@ define('CONFIG_FILE', __DIR__ . '/config/settings.enc.json');
 define('CIPHER',      'AES-256-CBC');
 define('SALT',        'to_paulfleury_salt_v1');
 define('TO_EMAIL',    'hello@paulfleury.com');
-define('FROM_EMAIL',  'to@paulfleury.com');
+define('FROM_EMAIL',  'to@up.paulfleury.com');
 define('FROM_NAME',   'Message to Paul');
 
 function jsonOut(array $data): void {
@@ -290,7 +290,7 @@ $payload = json_encode([
     'subject' => $subject,
     'html'    => $htmlBody,
     'text'    => $textBody,
-    'reply_to'=> $contact ?: null,
+    'reply_to'=> $contact ?: TO_EMAIL,
 ]);
 
 $ch = curl_init('https://api.resend.com/emails');
