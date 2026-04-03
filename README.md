@@ -1,6 +1,6 @@
 # To
 
-[![Version](https://img.shields.io/badge/version-1.2.0-000000?style=flat-square)](https://github.com/paulfxyz/to/releases/tag/v1.2.0)
+[![Version](https://img.shields.io/badge/version-1.2.1-000000?style=flat-square)](https://github.com/paulfxyz/to/releases/tag/v1.2.1)
 [![License](https://img.shields.io/badge/license-MIT-000000?style=flat-square)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
 [![Resend](https://img.shields.io/badge/email-Resend-000000?style=flat-square)](https://resend.com)

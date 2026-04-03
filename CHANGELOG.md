@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 
 ---
 
+## [1.2.1] — 2026-04-03
+
+### Fixed
+- Topbar and page title updated from "Message to Paul Fleury" to "Send a message to Paul Fleury"
+
+---
+
 ## [1.2.0] — 2026-04-03
 
 ### Added
