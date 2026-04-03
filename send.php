@@ -460,6 +460,18 @@ function buildText(array $d): string {
     return $text;
 }
 
+// ── Response helper ─────────────────────────────────────────────────────────
+
+/**
+ * Emit a JSON response and halt execution.
+ *
+ * @param array $data  Payload to JSON-encode and send
+ */
+function jsonOut(array $data): void {
+    echo json_encode($data);
+    exit;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 /** @var array $body  Decoded JSON request payload */
