@@ -1,4 +1,4 @@
-# To
+# to 📬
 
 [![Version](https://img.shields.io/badge/version-1.1.0-000000?style=flat-square)](https://github.com/paulfxyz/to/releases/tag/v1.1.0)
 [![License](https://img.shields.io/badge/license-MIT-000000?style=flat-square)](LICENSE)
