@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 
 ---
 
+## [1.2.2] — 2026-04-04
+
+### Fixed
+- `reply_to` field now only sent to Resend when the contact input is a valid email address. Freeform text (Telegram handle, phone, URL, etc.) is accepted in the contact field and included in the email body — Resend never sees it as `reply_to`, preventing the validation error.
+
+---
+
 ## [1.2.1] — 2026-04-03
 
 ### Fixed

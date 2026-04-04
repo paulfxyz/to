@@ -511,8 +511,13 @@ $resendPayload = [
     'text'    => $textBody,
 ];
 
-// Only add reply_to when the sender left a contact address
-if ($contact) {
+// Only add reply_to when the contact looks like a valid email address.
+// Resend strictly validates this field and rejects anything that isn't
+// email@example.com or Name <email@example.com> — so freeform text like
+// a Telegram handle, phone number, or URL must go in the email body instead.
+// The buildHtml/buildText functions already include the contact value in the
+// message body regardless, so nothing is lost either way.
+if ($contact && filter_var($contact, FILTER_VALIDATE_EMAIL)) {
     $resendPayload['reply_to'] = $contact;
 }
 
