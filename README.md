@@ -1,4 +1,4 @@
-# 🐺 howlr
+# 📯 howlr
 
 [![Version](https://img.shields.io/badge/version-3.0.0-ff6b35?style=flat-square)](https://github.com/paulfxyz/howlr/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
