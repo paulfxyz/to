@@ -6,6 +6,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 
 ---
 
+## [2.0.0] — 2026-04-04
+
+### Added
+- **i18n system** — Full internationalisation engine built into `index.html`:
+  - 10 languages: English 🇬🇧, French 🇫🇷, German 🇩🇪, Italian 🇮🇹, Spanish 🇪🇸, Dutch 🇳🇱, Chinese 🇨🇳, Hindi 🇮🇳, Japanese 🇯🇵, Russian 🇷🇺
+  - All UI strings keyed via a `T` translation object; `data-i18n` attributes on every element
+  - Active language persisted to `localStorage` (`to_lang`)
+  - Flag icon in topbar updates to reflect the active language
+- **Language picker modal** — flag icon (🌐) in topbar opens a 2-column grid of all supported languages; active language shows a ✓ badge
+- **Dark mode** — full CSS custom property overhaul:
+  - Light mode: existing warm-paper palette (`--bg: #fff`, `--fg: rgb(55,53,47)`)
+  - Dark mode: soft-dark palette (`--bg: rgb(25,25,23)`, `--fg: rgb(229,225,219)`)
+  - `[data-theme="dark"]` attribute set on `<html>` by JS
+  - Smooth 200ms transitions on all colour changes
+  - Voice waveform canvas background adapts to active theme
+- **Theme picker modal** — bulb icon (💡) in topbar opens a modal with three choices: Light, Dark, System (follows OS `prefers-color-scheme`)
+  - OS-level dark/light changes detected in real time via `matchMedia` listener when System is selected
+  - Active theme persisted to `localStorage` (`to_theme`)
+- New topbar icon cluster: theme bulb → language flag → settings cog (all using shared `.topbar-btn` style)
+- `color-scheme` CSS property applied per theme for native scroll bars and form element styling
+- Keyboard shortcut `Esc` now also closes language and theme modals
+
+### Changed
+- All hardcoded colour values (`#000`, `#fff`, `rgba(0,0,0,.x)`) replaced with CSS custom properties throughout CSS, enabling seamless dark mode
+- `updateState()` now calls `applyTranslations()` so state labels (Idle / Running / Paused) update immediately when language changes
+- `start()`, `pause()`, `reset()` calls `applyTranslations()` to keep dynamic UI strings (textarea placeholder, mobile toggle label) in sync with current language
+- Toast messages now use translated strings from `T[currentLang]`
+- Word/character counter pluralisation now resolves via `t('word')` / `t('words')` per language
+- Sidebar footer, welcome modal, send modal, error modal — all fully translated
+- Settings modal CSS converted to CSS variables (was partially hardcoded)
+- Theme initialisation runs before first paint to avoid flash of wrong theme
+
+---
+
 ## [1.2.2] — 2026-04-04
 
 ### Fixed

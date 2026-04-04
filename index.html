@@ -8,30 +8,65 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <style>
-    /* ── Tokens ──────────────────────────────────────────────────────────── */
+    /* ── Design tokens — Light (default) ─────────────────────────────────── */
     :root {
-      --fg:       rgb(55,53,47);
-      --fg-0:     rgba(55,53,47,.09);
-      --fg-1:     rgba(55,53,47,.16);
-      --fg-2:     rgba(55,53,47,.40);
-      --fg-3:     rgba(55,53,47,.60);
-      --fg-6:     rgba(55,53,47,.80);
-      --bg:       #fff;
-      --bg-0:     rgba(135,131,120,.15);
-      --bg-1:     rgb(247,246,243);
-      --heading:  'Playfair Display', Georgia, serif;
-      --body:     'Lora', Georgia, serif;
-      --mono:     ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      --topbar-h: 44px;
-      --aside-w:  240px;
+      --fg:        rgb(55,53,47);
+      --fg-0:      rgba(55,53,47,.09);
+      --fg-1:      rgba(55,53,47,.16);
+      --fg-2:      rgba(55,53,47,.40);
+      --fg-3:      rgba(55,53,47,.60);
+      --fg-6:      rgba(55,53,47,.80);
+      --bg:        #fff;
+      --bg-0:      rgba(135,131,120,.15);
+      --bg-1:      rgb(247,246,243);
+      --bg-2:      rgb(241,240,237);
+      --border:    rgba(55,53,47,.09);
+      --border-md: rgba(55,53,47,.14);
+      --shadow:    0 2px 20px rgba(0,0,0,.08);
+      --modal-bg:  rgba(0,0,0,.40);
+      --heading:   'Playfair Display', Georgia, serif;
+      --body:      'Lora', Georgia, serif;
+      --mono:      ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --topbar-h:  44px;
+      --aside-w:   240px;
+      --accent:    rgb(35,131,226);
+      --danger:    rgba(180,32,32,.9);
+      --success:   rgb(68,168,109);
+      --rec:       rgb(235,87,87);
+      color-scheme: light;
+    }
+
+    /* ── Dark mode tokens ────────────────────────────────────────────────── */
+    [data-theme="dark"] {
+      --fg:        rgb(229,225,219);
+      --fg-0:      rgba(229,225,219,.07);
+      --fg-1:      rgba(229,225,219,.14);
+      --fg-2:      rgba(229,225,219,.38);
+      --fg-3:      rgba(229,225,219,.55);
+      --fg-6:      rgba(229,225,219,.78);
+      --bg:        rgb(25,25,23);
+      --bg-0:      rgba(229,225,219,.06);
+      --bg-1:      rgb(32,31,29);
+      --bg-2:      rgb(40,39,36);
+      --border:    rgba(229,225,219,.08);
+      --border-md: rgba(229,225,219,.13);
+      --shadow:    0 2px 24px rgba(0,0,0,.35);
+      --modal-bg:  rgba(0,0,0,.65);
+      --accent:    rgb(58,150,243);
+      color-scheme: dark;
     }
 
     /* ── Reset ───────────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
-    body { font-family: var(--body); color: var(--fg); background: var(--bg); font-size: 16px; overflow-x: hidden; }
+    body {
+      font-family: var(--body); color: var(--fg); background: var(--bg);
+      font-size: 16px; overflow-x: hidden;
+      transition: background 200ms ease, color 200ms ease;
+    }
     button { font-family: var(--body); cursor: pointer; }
     button:disabled { cursor: not-allowed; }
+    a { color: inherit; }
 
     /* ── Topbar ──────────────────────────────────────────────────────────── */
     #topbar {
@@ -39,41 +74,43 @@
       height: var(--topbar-h);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 20px;
-      background: rgba(255,255,255,.92);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--fg-0);
+      border-bottom: 1px solid var(--border);
       font-size: 13.5px; color: var(--fg-3);
+      transition: background 200ms, border-color 200ms;
     }
     #topbar .breadcrumb { display: flex; align-items: center; gap: 4px; min-width: 0; }
     #topbar .bc-page {
       padding: 2px 5px; border-radius: 3px; color: var(--fg);
       font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    #topbar .status { display: flex; align-items: center; gap: 6px; font-size: 12.5px; flex-shrink: 0; }
-    #state-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--fg-2); transition: background 300ms; }
-    #state-label { color: var(--fg-3); }
-    #settings-btn {
+    #topbar .controls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+    .topbar-btn {
       background: transparent; border: none; border-radius: 50%;
-      width: 26px; height: 26px;
+      width: 28px; height: 28px;
       display: flex; align-items: center; justify-content: center;
-      color: var(--fg-2); font-size: 14px; margin-left: 2px;
+      color: var(--fg-2); font-size: 14px;
       transition: background 80ms, color 80ms;
+      flex-shrink: 0;
     }
-    #settings-btn:hover { background: var(--bg-0); color: var(--fg); }
+    .topbar-btn:hover { background: var(--bg-0); color: var(--fg); }
+    #state-pill {
+      display: flex; align-items: center; gap: 5px;
+      padding: 0 8px; height: 24px; border-radius: 12px;
+      font-size: 12px; color: var(--fg-3);
+      margin-right: 4px;
+    }
+    #state-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--fg-2); transition: background 300ms; flex-shrink: 0; }
 
     /* ── Layout ──────────────────────────────────────────────────────────── */
-    #layout {
-      display: flex;
-      padding-top: var(--topbar-h);
-      height: 100vh;
-    }
+    #layout { display: flex; padding-top: var(--topbar-h); height: 100vh; }
 
     /* ── Writing area ────────────────────────────────────────────────────── */
     #writing-area {
       flex: 1; min-width: 0;
       height: calc(100vh - var(--topbar-h));
-      display: flex; flex-direction: column;
-      overflow: hidden;
+      display: flex; flex-direction: column; overflow: hidden;
     }
     #writing-header {
       flex-shrink: 0;
@@ -97,15 +134,16 @@
     #text {
       display: block; width: 100%; flex: 1; height: 0;
       resize: none; background: transparent; border: none;
-      border-bottom: 1px solid rgba(55,53,47,.06);
+      border-bottom: 1px solid var(--border);
       border-radius: 0; padding: 4px 0 20px;
       font-family: var(--body); font-size: 17px; line-height: 1.75;
       color: var(--fg); outline: none;
-      cursor: default; opacity: .55;
-      transition: opacity 180ms ease, border-color 180ms ease;
-      caret-color: rgb(35,131,226);
+      cursor: default; opacity: .45;
+      transition: opacity 180ms ease, border-color 180ms ease, color 200ms, background 200ms;
+      caret-color: var(--accent);
     }
-    #text:not(:disabled) { cursor: text; opacity: 1; border-bottom-color: rgba(55,53,47,.12); }
+    #text::placeholder { color: var(--fg-2); }
+    #text:not(:disabled) { cursor: text; opacity: 1; border-bottom-color: var(--border-md); }
 
     #writing-footer {
       flex-shrink: 0;
@@ -119,7 +157,7 @@
       background: var(--bg-1); border-radius: 4px; padding: 10px 14px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       opacity: 0; transform: translateY(6px);
-      transition: opacity 180ms ease, transform 180ms ease;
+      transition: opacity 180ms ease, transform 180ms ease, background 200ms;
     }
     #audio-block.mounted { opacity: 1; transform: none; }
     #audio-block .ab-left { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--fg); }
@@ -138,35 +176,34 @@
     /* ── Sidebar ─────────────────────────────────────────────────────────── */
     #sidebar {
       width: var(--aside-w); flex-shrink: 0;
-      border-left: 1px solid rgba(0,0,0,.07);
-      background: #fff;
+      border-left: 1px solid var(--border);
+      background: var(--bg);
       position: sticky; top: var(--topbar-h);
       height: calc(100vh - var(--topbar-h));
       overflow-y: auto;
       display: flex; flex-direction: column;
+      transition: background 200ms, border-color 200ms;
     }
-
-    .sb-section { padding: 16px 12px; border-bottom: 1px solid rgba(0,0,0,.07); }
+    .sb-section { padding: 16px 12px; border-bottom: 1px solid var(--border); transition: border-color 200ms; }
     .sb-section:last-of-type { border-bottom: none; }
-
     .sb-label {
       font-size: 10.5px; font-weight: 600; letter-spacing: .08em;
-      text-transform: uppercase; color: rgba(0,0,0,.3);
+      text-transform: uppercase; color: var(--fg-2);
       margin: 0 0 4px 10px;
     }
 
     /* Timer */
-    #timer-section { padding: 28px 20px 22px; border-bottom: 1px solid rgba(0,0,0,.07); }
+    #timer-section { padding: 28px 20px 22px; border-bottom: 1px solid var(--border); transition: border-color 200ms; }
     #timer-state-row { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
-    #timer-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,.2); flex-shrink: 0; transition: background 300ms; }
-    #timer-state-lbl { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: rgba(0,0,0,.35); font-weight: 500; transition: color 300ms; }
+    #timer-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--fg-2); flex-shrink: 0; transition: background 300ms; }
+    #timer-state-lbl { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--fg-2); font-weight: 500; transition: color 300ms; }
     #timer-display {
       font-family: var(--mono); font-size: 28px; font-weight: 300;
-      letter-spacing: -.02em; color: rgba(0,0,0,.45); line-height: 1;
+      letter-spacing: -.02em; color: var(--fg-3); line-height: 1;
       transition: color 300ms;
     }
-    #timer-display.running { color: #000; }
-    #timer-note { font-size: 10.5px; color: rgba(0,0,0,.28); margin-top: 8px; letter-spacing: .02em; }
+    #timer-display.running { color: var(--fg); }
+    #timer-note { font-size: 10.5px; color: var(--fg-2); margin-top: 8px; letter-spacing: .02em; }
 
     /* Sidebar buttons */
     .sbtn {
@@ -175,24 +212,25 @@
       padding: 7px 10px;
       font-family: var(--body); font-size: 13px; font-weight: 450;
       text-align: left; background: transparent;
-      color: rgba(0,0,0,.82); letter-spacing: -.01em;
-      transition: background 80ms, opacity 80ms;
+      color: var(--fg); letter-spacing: -.01em;
+      transition: background 80ms, opacity 80ms, color 200ms;
       position: relative;
     }
-    .sbtn:hover:not(:disabled) { background: rgba(0,0,0,.055); }
+    .sbtn:hover:not(:disabled) { background: var(--bg-0); }
     .sbtn:disabled { opacity: .3; }
-    .sbtn.primary { background: #000; color: #fff; }
-    .sbtn.primary:hover:not(:disabled) { background: #1f1f1f; }
-    .sbtn.danger { color: rgba(180,32,32,.9); }
+    .sbtn.primary { background: var(--fg); color: var(--bg); }
+    .sbtn.primary:hover:not(:disabled) { opacity: .88; }
+    .sbtn.danger { color: var(--danger); }
     .sbtn.danger:hover:not(:disabled) { background: rgba(180,32,32,.07); }
     .sbtn .sc {
       margin-left: auto; font-family: var(--mono); font-size: 10.5px;
-      background: rgba(0,0,0,.06); color: rgba(0,0,0,.28);
+      background: var(--bg-0); color: var(--fg-2);
       padding: 2px 5px; border-radius: 4px; letter-spacing: 0; flex-shrink: 0;
     }
-    .sbtn.primary .sc { background: rgba(255,255,255,.1); color: rgba(255,255,255,.45); }
+    .sbtn.primary .sc { background: rgba(255,255,255,.12); color: rgba(255,255,255,.45); }
+    [data-theme="dark"] .sbtn.primary .sc { background: rgba(0,0,0,.2); color: rgba(255,255,255,.35); }
     .sbtn .badge {
-      margin-left: auto; background: #000; color: #fff;
+      margin-left: auto; background: var(--fg); color: var(--bg);
       border-radius: 9px; font-size: 10px; padding: 1px 6px;
       font-weight: 500; flex-shrink: 0;
     }
@@ -202,155 +240,159 @@
     #send-btn {
       margin-top: 6px; border-radius: 8px; padding: 9px 12px;
       font-size: 13px; font-weight: 500;
-      background: rgba(0,0,0,.06); color: rgba(0,0,0,.4);
+      background: var(--bg-0); color: var(--fg-2);
     }
-    #send-btn:not(:disabled) { background: #000; color: #fff; }
-    #send-btn:not(:disabled):hover { background: #1f1f1f; }
-    #send-btn .sc { background: rgba(255,255,255,.14); color: rgba(255,255,255,.5); }
-    #send-btn:disabled .sc { background: rgba(0,0,0,.08); color: rgba(0,0,0,.28); }
+    #send-btn:not(:disabled) { background: var(--fg); color: var(--bg); }
+    #send-btn:not(:disabled):hover { opacity: .88; }
+    #send-btn .sc { background: rgba(255,255,255,.12); color: rgba(255,255,255,.45); }
+    #send-btn:disabled .sc { background: var(--bg-0); color: var(--fg-2); }
 
     /* Sidebar footer */
     #sb-footer {
       margin-top: auto; padding: 16px 20px 24px;
-      border-top: 1px solid rgba(0,0,0,.07);
+      border-top: 1px solid var(--border);
       font-size: 11px; line-height: 1.6;
-      color: rgba(0,0,0,.28); letter-spacing: .01em;
+      color: var(--fg-2); letter-spacing: .01em;
+      transition: border-color 200ms;
     }
 
     /* ── File upload ─────────────────────────────────────────────────────── */
     #file-drop {
       display: flex; align-items: center; gap: 8px;
       padding: 7px 10px; border-radius: 7px;
-      border: 1.5px dashed rgba(0,0,0,.13);
+      border: 1.5px dashed var(--border-md);
       background: transparent; cursor: pointer;
       font-family: var(--body); font-size: 13px; font-weight: 450;
-      color: rgba(0,0,0,.65); user-select: none;
+      color: var(--fg-3); user-select: none;
       transition: border-color 100ms, background 100ms, color 100ms;
       outline: none;
     }
-    #file-drop:hover, #file-drop.dragging {
-      background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.22);
-    }
-    #file-drop.dragging { border-color: rgba(0,0,0,.45); color: rgba(0,0,0,.75); }
-    #file-drop .fd-icon { color: rgba(0,0,0,.4); flex-shrink: 0; font-size: 12px; }
-    #file-drop .fd-hint { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: rgba(0,0,0,.25); }
+    #file-drop:hover, #file-drop.dragging { background: var(--bg-0); border-color: var(--fg-2); }
+    #file-drop .fd-hint { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--fg-2); }
     #file-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
     .fi {
       display: flex; align-items: center; gap: 7px;
       padding: 5px 8px; border-radius: 6px;
-      background: rgba(0,0,0,.03); font-family: var(--body);
+      background: var(--bg-0); font-family: var(--body);
     }
-    .fi-type-icon { color: rgba(0,0,0,.35); flex-shrink: 0; font-size: 11px; }
     .fi-name {
-      flex: 1; min-width: 0; font-size: 11.5px; color: rgba(0,0,0,.72);
+      flex: 1; min-width: 0; font-size: 11.5px; color: var(--fg-3);
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .fi-badge {
       flex-shrink: 0; font-size: 9.5px; letter-spacing: .04em;
-      color: rgba(0,0,0,.3); background: rgba(0,0,0,.06);
+      color: var(--fg-2); background: var(--bg-1);
       padding: 1px 5px; border-radius: 4px; font-family: var(--mono);
     }
-    .fi-size { flex-shrink: 0; font-size: 10.5px; color: rgba(0,0,0,.28); font-family: var(--mono); }
+    .fi-size { flex-shrink: 0; font-size: 10.5px; color: var(--fg-2); font-family: var(--mono); }
     .fi-rm {
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; width: 18px; height: 18px;
       border: none; border-radius: 4px; background: transparent;
-      color: rgba(0,0,0,.3); font-size: 9px; padding: 0;
+      color: var(--fg-2); font-size: 9px; padding: 0;
       transition: background 80ms, color 80ms;
     }
-    .fi-rm:hover { background: rgba(0,0,0,.08); color: rgba(0,0,0,.7); }
+    .fi-rm:hover { background: var(--bg-0); color: var(--fg); }
+
+    /* ── Shared modal primitives ─────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 50;
+      display: none; align-items: center; justify-content: center;
+      padding: 16px;
+      background: var(--modal-bg); backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      width: 100%; max-width: 480px;
+      background: var(--bg); border-radius: 16px;
+      border: 1px solid var(--border-md);
+      box-shadow: 0 24px 64px rgba(0,0,0,.22);
+      font-family: var(--body); overflow: hidden; position: relative;
+      transition: background 200ms, border-color 200ms;
+    }
+    .modal-head { padding: 24px 24px 20px; border-bottom: 1px solid var(--border); transition: border-color 200ms; }
+    .modal-head h2 {
+      font-family: var(--heading); font-size: 22px; font-weight: 700;
+      color: var(--fg); margin-bottom: 4px; letter-spacing: -.02em;
+    }
+    .modal-head .msub { font-size: 13.5px; color: var(--fg-2); line-height: 1.5; }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: var(--bg-0); border: none; border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--fg-2); font-size: 14px;
+      transition: background 80ms;
+    }
+    .modal-close:hover { background: var(--bg-1); }
 
     /* ── Welcome modal ───────────────────────────────────────────────────── */
     #welcome-overlay {
       position: fixed; inset: 0; z-index: 60;
-      background: rgba(255,255,255,.72);
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
       backdrop-filter: blur(2px);
       display: flex; align-items: center; justify-content: center;
       padding: 24px;
+      transition: background 200ms;
     }
     #welcome-card {
       width: 100%; max-width: 440px;
-      background: #fff; border-radius: 18px;
-      box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 12px 40px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.06);
+      background: var(--bg); border-radius: 18px;
+      border: 1px solid var(--border-md);
+      box-shadow: var(--shadow);
       padding: 40px 40px 36px;
       display: flex; flex-direction: column; align-items: flex-start;
+      transition: background 200ms, border-color 200ms;
     }
     #welcome-card .eyebrow {
       font-size: 11px; font-weight: 600; letter-spacing: .1em;
-      text-transform: uppercase; color: rgba(0,0,0,.32); margin-bottom: 14px;
+      text-transform: uppercase; color: var(--fg-2); margin-bottom: 14px;
     }
     #welcome-card h1 {
       font-family: var(--heading); font-size: 32px; font-weight: 700;
-      line-height: 1.2; color: #000; margin-bottom: 16px; letter-spacing: -.02em;
+      line-height: 1.2; color: var(--fg); margin-bottom: 16px; letter-spacing: -.02em;
     }
-    #welcome-card .desc { font-size: 15px; line-height: 1.7; color: rgba(0,0,0,.52); margin-bottom: 10px; }
+    #welcome-card .desc { font-size: 15px; line-height: 1.7; color: var(--fg-3); margin-bottom: 10px; }
     #welcome-card .desc:last-of-type { margin-bottom: 32px; }
-    #welcome-card .divider { width: 100%; height: 1px; background: rgba(0,0,0,.07); margin-bottom: 28px; }
+    #welcome-card .divider { width: 100%; height: 1px; background: var(--border); margin-bottom: 28px; }
     #welcome-steps { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 32px; }
     .wstep { display: flex; align-items: center; gap: 12px; }
     .wstep-n {
       display: flex; align-items: center; justify-content: center;
       width: 22px; height: 22px; border-radius: 50%;
-      background: #000; color: #fff; font-size: 10.5px; font-weight: 600; flex-shrink: 0;
+      background: var(--fg); color: var(--bg); font-size: 10.5px; font-weight: 600; flex-shrink: 0;
     }
-    .wstep-lbl { font-size: 14px; color: rgba(0,0,0,.65); line-height: 1.4; }
+    .wstep-lbl { font-size: 14px; color: var(--fg-3); line-height: 1.4; }
     #welcome-start {
       width: 100%; border: none; border-radius: 10px; padding: 14px 20px;
-      background: #000; color: #fff; font-family: var(--body); font-size: 15px;
+      background: var(--fg); color: var(--bg); font-family: var(--body); font-size: 15px;
       font-weight: 500; letter-spacing: -.01em;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background 80ms;
+      transition: opacity 80ms;
     }
-    #welcome-start:hover { background: #1f1f1f; }
+    #welcome-start:hover { opacity: .88; }
     #welcome-hint {
       margin-top: 14px; width: 100%; text-align: center;
-      font-size: 11.5px; color: rgba(0,0,0,.28); line-height: 1.5;
+      font-size: 11.5px; color: var(--fg-2); line-height: 1.5;
     }
     .kbd {
-      font-family: var(--mono); background: rgba(0,0,0,.06);
+      font-family: var(--mono); background: var(--bg-0);
       padding: 1px 5px; border-radius: 4px; font-size: 10.5px;
     }
 
     /* ── Send modal ──────────────────────────────────────────────────────── */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 50;
-      display: none; align-items: center; justify-content: center;
-      padding: 16px;
-      background: rgba(0,0,0,.4); backdrop-filter: blur(4px);
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      width: 100%; max-width: 480px;
-      background: #fff; border-radius: 16px;
-      box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 0 0 1px rgba(0,0,0,.06);
-      font-family: var(--body); overflow: hidden; position: relative;
-    }
-    .modal-head { padding: 24px 24px 20px; border-bottom: 1px solid rgba(0,0,0,.07); }
-    .modal-head h2 {
-      font-family: var(--heading); font-size: 22px; font-weight: 700;
-      color: #000; margin-bottom: 4px; letter-spacing: -.02em;
-    }
-    .modal-head .msub { font-size: 13.5px; color: rgba(0,0,0,.45); line-height: 1.5; }
-    .modal-close {
-      position: absolute; top: 16px; right: 16px;
-      background: rgba(0,0,0,.05); border: none; border-radius: 50%;
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      color: rgba(0,0,0,.5); font-size: 14px;
-      transition: background 80ms;
-    }
-    .modal-close:hover { background: rgba(0,0,0,.09); }
     .modal-stats {
       display: flex; gap: 0; margin-top: 16px;
-      background: #f5f5f7; border-radius: 10px; overflow: hidden;
+      background: var(--bg-1); border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--border); transition: background 200ms, border-color 200ms;
     }
     .stat-cell {
       flex: 1; padding: 12px 14px;
-      border-right: 1px solid rgba(0,0,0,.08);
+      border-right: 1px solid var(--border); transition: border-color 200ms;
     }
     .stat-cell:last-child { border-right: none; }
-    .stat-lbl { font-size: 10px; color: rgba(0,0,0,.38); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
-    .stat-val { font-size: 18px; font-weight: 500; letter-spacing: -.02em; color: #000; line-height: 1; }
+    .stat-lbl { font-size: 10px; color: var(--fg-2); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
+    .stat-val { font-size: 18px; font-weight: 500; letter-spacing: -.02em; color: var(--fg); line-height: 1; }
     .stat-val.mono { font-family: var(--mono); font-size: 15px; font-weight: 400; }
 
     .modal-body { padding: 20px 24px; }
@@ -358,51 +400,52 @@
     .mfield label {
       display: block; font-size: 10.5px; font-weight: 600;
       letter-spacing: .07em; text-transform: uppercase;
-      color: rgba(0,0,0,.35); margin-bottom: 6px;
+      color: var(--fg-2); margin-bottom: 6px;
     }
     .mfield input {
       width: 100%; background: transparent; border: none;
-      border-bottom: 1px solid rgba(0,0,0,.12); border-radius: 0;
+      border-bottom: 1px solid var(--border-md); border-radius: 0;
       padding: 8px 0; font-family: var(--body); font-size: 15px;
-      color: #000; outline: none; transition: border-color 120ms;
+      color: var(--fg); outline: none; transition: border-color 120ms, color 200ms;
     }
-    .mfield input:focus { border-bottom-color: #000; }
+    .mfield input::placeholder { color: var(--fg-2); }
+    .mfield input:focus { border-bottom-color: var(--fg); }
     .msend-label {
       font-size: 10.5px; font-weight: 600; letter-spacing: .07em;
-      text-transform: uppercase; color: rgba(0,0,0,.35);
+      text-transform: uppercase; color: var(--fg-2);
       margin: 24px 0 10px;
     }
     .mbtn-email {
       display: flex; align-items: center; gap: 12px;
       width: 100%; border: none; border-radius: 10px;
       padding: 13px 16px;
-      background: #000; color: #fff;
+      background: var(--fg); color: var(--bg);
       font-family: var(--body); font-size: 14px; font-weight: 500;
       letter-spacing: -.01em; margin-bottom: 8px;
-      transition: background 80ms;
+      transition: opacity 80ms;
     }
-    .mbtn-email:hover:not(:disabled) { background: #1f1f1f; }
+    .mbtn-email:hover:not(:disabled) { opacity: .88; }
     .mbtn-email:disabled { opacity: .5; cursor: not-allowed; }
     .mbtn-copy {
       display: flex; align-items: center; gap: 12px;
-      width: 100%; border: 1px solid rgba(0,0,0,.12);
+      width: 100%; border: 1px solid var(--border-md);
       border-radius: 10px; padding: 13px 16px;
-      background: transparent; color: #000;
+      background: transparent; color: var(--fg);
       font-family: var(--body); font-size: 14px; font-weight: 500;
       letter-spacing: -.01em;
-      transition: background 80ms;
+      transition: background 80ms, border-color 200ms;
     }
-    .mbtn-copy:hover { background: rgba(0,0,0,.03); }
-    .mbtn-hint { margin-left: auto; font-size: 12px; }
+    .mbtn-copy:hover { background: var(--bg-0); }
+    .mbtn-hint { margin-left: auto; font-size: 12px; color: var(--fg-2); }
     .mbtn-email .mbtn-hint { color: rgba(255,255,255,.4); }
-    .mbtn-copy .mbtn-hint { color: rgba(0,0,0,.3); }
+    [data-theme="dark"] .mbtn-email .mbtn-hint { color: rgba(0,0,0,.4); }
     .modal-foot {
       padding: 12px 24px 20px;
-      border-top: 1px solid rgba(0,0,0,.06);
+      border-top: 1px solid var(--border); transition: border-color 200ms;
       display: flex; align-items: center; gap: 8px;
     }
-    .modal-foot-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,.2); flex-shrink: 0; }
-    .modal-foot p { font-size: 11.5px; color: rgba(0,0,0,.38); line-height: 1.5; }
+    .modal-foot-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-2); flex-shrink: 0; }
+    .modal-foot p { font-size: 11.5px; color: var(--fg-2); line-height: 1.5; }
 
     /* Sending spinner */
     #send-progress {
@@ -412,11 +455,11 @@
     #send-progress.show { display: flex; }
     .spinner {
       width: 36px; height: 36px; border-radius: 50%;
-      border: 3px solid rgba(0,0,0,.1); border-top-color: #000;
+      border: 3px solid var(--border-md); border-top-color: var(--fg);
       animation: spin 700ms linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #send-progress p { font-size: 14px; color: rgba(0,0,0,.5); }
+    #send-progress p { font-size: 14px; color: var(--fg-2); }
 
     /* Sent step */
     #sent-step {
@@ -425,222 +468,232 @@
     }
     .sent-icon {
       width: 56px; height: 56px; border-radius: 50%;
-      background: #000; display: flex; align-items: center; justify-content: center;
+      background: var(--fg); display: flex; align-items: center; justify-content: center;
       margin-bottom: 20px;
     }
-    .sent-icon svg { color: #fff; }
+    .sent-icon svg { color: var(--bg); }
     #sent-step h2 {
       font-family: var(--heading); font-size: 26px; font-weight: 700;
-      color: #000; margin-bottom: 10px; letter-spacing: -.02em;
+      color: var(--fg); margin-bottom: 10px; letter-spacing: -.02em;
     }
-    #sent-step p { font-size: 14.5px; color: rgba(0,0,0,.5); line-height: 1.65; max-width: 320px; margin-bottom: 28px; }
-    #sent-recap { display: flex; gap: 20px; margin-bottom: 32px; padding: 14px 20px; background: #f5f5f7; border-radius: 10px; font-size: 13px; color: rgba(0,0,0,.55); }
-    #sent-recap span { color: rgba(0,0,0,.2); }
+    #sent-step p { font-size: 14.5px; color: var(--fg-2); line-height: 1.65; max-width: 320px; margin-bottom: 28px; }
+    #sent-recap { display: flex; gap: 20px; margin-bottom: 32px; padding: 14px 20px; background: var(--bg-1); border-radius: 10px; font-size: 13px; color: var(--fg-3); transition: background 200ms; }
     #sent-actions { display: flex; gap: 10px; }
     .sent-back {
-      background: transparent; border: 1px solid rgba(0,0,0,.12);
+      background: transparent; border: 1px solid var(--border-md);
       border-radius: 8px; padding: 9px 18px;
       font-family: var(--body); font-size: 13.5px; font-weight: 500;
-      color: rgba(0,0,0,.7); transition: background 80ms;
+      color: var(--fg-3); transition: background 80ms, border-color 200ms;
     }
-    .sent-back:hover { background: rgba(0,0,0,.04); }
+    .sent-back:hover { background: var(--bg-0); }
     .sent-goto {
-      background: #000; border: none; border-radius: 8px; padding: 9px 20px;
+      background: var(--fg); border: none; border-radius: 8px; padding: 9px 20px;
       font-family: var(--body); font-size: 13.5px; font-weight: 500;
-      color: #fff; transition: background 80ms; text-decoration: none;
+      color: var(--bg); transition: opacity 80ms; text-decoration: none;
       display: inline-flex; align-items: center; gap: 6px;
     }
-    .sent-goto:hover { background: #1f1f1f; }
+    .sent-goto:hover { opacity: .88; }
 
     /* Error step */
     #error-step {
       padding: 40px 32px;
       display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-    .error-icon {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: rgba(180,32,32,.1); display: flex; align-items: center; justify-content: center;
-      margin-bottom: 16px; font-size: 22px;
-    }
-    #error-step h2 {
-      font-family: var(--heading); font-size: 22px; font-weight: 700;
-      color: #000; margin-bottom: 8px;
-    }
-    #error-msg { font-size: 14px; color: rgba(0,0,0,.5); line-height: 1.6; margin-bottom: 24px; max-width: 300px; }
+    .error-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(180,32,32,.1); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 22px; }
+    #error-step h2 { font-family: var(--heading); font-size: 22px; font-weight: 700; color: var(--fg); margin-bottom: 8px; }
+    #error-msg { font-size: 14px; color: var(--fg-2); line-height: 1.6; margin-bottom: 24px; max-width: 300px; }
     .error-actions { display: flex; gap: 8px; }
-    .err-retry {
-      background: #000; border: none; border-radius: 8px; padding: 9px 20px;
-      font-family: var(--body); font-size: 13.5px; font-weight: 500; color: #fff;
-      transition: background 80ms;
-    }
-    .err-retry:hover { background: #1f1f1f; }
-    .err-back {
-      background: transparent; border: 1px solid rgba(0,0,0,.12);
-      border-radius: 8px; padding: 9px 18px;
-      font-family: var(--body); font-size: 13.5px; font-weight: 500;
-      color: rgba(0,0,0,.7); transition: background 80ms;
-    }
-    .err-back:hover { background: rgba(0,0,0,.04); }
+    .err-retry { background: var(--fg); border: none; border-radius: 8px; padding: 9px 20px; font-family: var(--body); font-size: 13.5px; font-weight: 500; color: var(--bg); transition: opacity 80ms; }
+    .err-retry:hover { opacity: .88; }
+    .err-back { background: transparent; border: 1px solid var(--border-md); border-radius: 8px; padding: 9px 18px; font-family: var(--body); font-size: 13.5px; font-weight: 500; color: var(--fg-3); transition: background 80ms; }
+    .err-back:hover { background: var(--bg-0); }
 
     /* ── Voice modal ─────────────────────────────────────────────────────── */
     #voice-overlay {
       position: fixed; inset: 0; z-index: 50;
       display: none; align-items: center; justify-content: center;
-      background: rgba(15,15,15,.6); backdrop-filter: blur(2px);
+      background: var(--modal-bg); backdrop-filter: blur(2px);
     }
     #voice-overlay.open { display: flex; }
     #voice-box {
-      background: #fff; border-radius: 6px;
-      box-shadow: rgba(15,15,15,.1) 0 0 0 1px, rgba(15,15,15,.2) 0 5px 10px, rgba(15,15,15,.4) 0 15px 40px;
+      background: var(--bg); border-radius: 10px;
+      border: 1px solid var(--border-md);
+      box-shadow: var(--shadow);
       width: clamp(320px,90vw,480px);
       padding: 24px 28px 20px; font-family: var(--body);
+      transition: background 200ms, border-color 200ms;
     }
     #voice-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     #voice-title-row span { font-size: 14px; font-weight: 600; color: var(--fg); }
-    #voice-close {
-      background: transparent; border: none; border-radius: 4px;
-      padding: 2px 6px; color: var(--fg-2); font-size: 16px; line-height: 1;
-      transition: color 80ms, background 80ms;
-    }
+    #voice-close { background: transparent; border: none; border-radius: 4px; padding: 2px 6px; color: var(--fg-2); font-size: 16px; line-height: 1; transition: color 80ms, background 80ms; }
     #voice-close:hover { color: var(--fg); background: var(--bg-0); }
-    #voice-error {
-      display: none;
-      background: var(--bg-1); border-radius: 4px; padding: 12px;
-      font-size: 14px; color: var(--fg-3); margin-bottom: 16px; line-height: 1.5;
-    }
+    #voice-error { display: none; background: var(--bg-1); border-radius: 4px; padding: 12px; font-size: 14px; color: var(--fg-3); margin-bottom: 16px; line-height: 1.5; }
     #voice-error.show { display: flex; gap: 8px; }
     #voice-canvas { width: 100%; height: 64px; border-radius: 4px; display: block; }
-    #voice-rec-indicator {
-      display: none; align-items: center; justify-content: center; gap: 6px;
-      margin-top: 12px; font-size: 12px; font-weight: 600; color: rgb(235,87,87);
-    }
+    #voice-rec-indicator { display: none; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--rec); }
     #voice-rec-indicator.show { display: flex; }
-    .rec-dot {
-      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-      background: rgb(235,87,87);
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-    #voice-timer {
-      text-align: center; font-family: var(--mono);
-      font-size: 28px; font-weight: 300;
-      font-variant-numeric: tabular-nums; color: var(--fg);
-      letter-spacing: .02em;
-    }
+    .rec-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--rec); animation: pulse 1.2s ease-in-out infinite; }
+    #voice-timer { text-align: center; font-family: var(--mono); font-size: 28px; font-weight: 300; font-variant-numeric: tabular-nums; color: var(--fg); letter-spacing: .02em; }
     #voice-actions { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
     #voice-actions.recorded { flex-direction: row; justify-content: center; gap: 8px; }
-    .rec-circle {
-      width: 48px; height: 48px; border-radius: 50%; border: none;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 120ms ease;
-    }
+    .rec-circle { width: 48px; height: 48px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; transition: transform 120ms ease; }
     .rec-circle:hover { transform: scale(1.05); }
-    #rec-start { background: rgb(235,87,87); }
-    #rec-stop { background: var(--fg); }
-    .rec-square { display: block; width: 16px; height: 16px; border-radius: 3px; background: #fff; }
-    #voice-actions .vbtn {
-      background: transparent; border: none; border-radius: 4px;
-      padding: 6px 14px; font-family: var(--body); font-size: 14px;
-      font-weight: 500; color: var(--fg); transition: background 80ms;
-    }
+    #rec-start { background: var(--rec); }
+    #rec-stop  { background: var(--fg); }
+    .rec-square { display: block; width: 16px; height: 16px; border-radius: 3px; background: var(--bg); }
+    #voice-actions .vbtn { background: transparent; border: none; border-radius: 4px; padding: 6px 14px; font-family: var(--body); font-size: 14px; font-weight: 500; color: var(--fg); transition: background 80ms; }
     #voice-actions .vbtn:hover { background: var(--bg-0); }
-    #voice-actions .vbtn.muted { color: var(--fg-3); }
-    #voice-actions .vbtn.blue { background: rgb(35,131,226); color: #fff; border-radius: 4px; }
-    #voice-actions .vbtn.blue:hover { background: rgb(20,116,209); }
+    #voice-actions .vbtn.muted { color: var(--fg-2); }
+    #voice-actions .vbtn.blue { background: var(--accent); color: #fff; border-radius: 4px; }
+    #voice-actions .vbtn.blue:hover { filter: brightness(1.1); }
+
+    /* ── Language modal ──────────────────────────────────────────────────── */
+    #lang-overlay {
+      position: fixed; inset: 0; z-index: 60;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+      background: var(--modal-bg); backdrop-filter: blur(4px);
+    }
+    #lang-overlay.open { display: flex; }
+    #lang-box {
+      width: 100%; max-width: 380px;
+      background: var(--bg); border-radius: 16px;
+      border: 1px solid var(--border-md);
+      box-shadow: var(--shadow);
+      overflow: hidden; font-family: var(--body);
+      transition: background 200ms, border-color 200ms;
+    }
+    #lang-box .l-head {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border); transition: border-color 200ms;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #lang-box .l-head h2 { font-family: var(--heading); font-size: 18px; font-weight: 700; color: var(--fg); letter-spacing: -.02em; }
+    #lang-box .l-head p { font-size: 12px; color: var(--fg-2); margin-top: 2px; }
+    .l-close { background: var(--bg-0); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--fg-2); font-size: 13px; transition: background 80ms; flex-shrink: 0; }
+    .l-close:hover { background: var(--bg-1); }
+    #lang-list { padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .lang-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; border: none;
+      background: transparent; cursor: pointer; font-family: var(--body);
+      text-align: left; transition: background 80ms;
+      position: relative;
+    }
+    .lang-item:hover { background: var(--bg-0); }
+    .lang-item.active { background: var(--bg-1); }
+    .lang-item.active::after {
+      content: '✓';
+      position: absolute; right: 10px;
+      font-size: 11px; color: var(--success); font-weight: 700;
+    }
+    .lang-flag { font-size: 20px; line-height: 1; flex-shrink: 0; }
+    .lang-info { min-width: 0; }
+    .lang-name { font-size: 13px; font-weight: 500; color: var(--fg); letter-spacing: -.01em; }
+    .lang-native { font-size: 11px; color: var(--fg-2); margin-top: 1px; }
+
+    /* ── Theme modal ─────────────────────────────────────────────────────── */
+    #theme-overlay {
+      position: fixed; inset: 0; z-index: 60;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
+      background: var(--modal-bg); backdrop-filter: blur(4px);
+    }
+    #theme-overlay.open { display: flex; }
+    #theme-box {
+      width: 100%; max-width: 340px;
+      background: var(--bg); border-radius: 16px;
+      border: 1px solid var(--border-md);
+      box-shadow: var(--shadow);
+      overflow: hidden; font-family: var(--body);
+      transition: background 200ms, border-color 200ms;
+    }
+    #theme-box .t-head {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border); transition: border-color 200ms;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #theme-box .t-head h2 { font-family: var(--heading); font-size: 18px; font-weight: 700; color: var(--fg); letter-spacing: -.02em; }
+    #theme-box .t-head p { font-size: 12px; color: var(--fg-2); margin-top: 2px; }
+    .t-close { background: var(--bg-0); border: none; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--fg-2); font-size: 13px; transition: background 80ms; flex-shrink: 0; }
+    .t-close:hover { background: var(--bg-1); }
+    #theme-list { padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .theme-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 14px; border-radius: 10px; border: none;
+      background: transparent; cursor: pointer; font-family: var(--body);
+      text-align: left; transition: background 80ms;
+      position: relative; width: 100%;
+    }
+    .theme-item:hover { background: var(--bg-0); }
+    .theme-item.active { background: var(--bg-1); }
+    .theme-item.active::after { content: '✓'; position: absolute; right: 14px; font-size: 11px; color: var(--success); font-weight: 700; }
+    .theme-swatch {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      border: 1px solid var(--border-md); overflow: hidden;
+      display: flex;
+    }
+    .theme-swatch .sw-l { flex: 1; background: #fff; }
+    .theme-swatch .sw-d { flex: 1; background: rgb(25,25,23); }
+    .theme-swatch.light-only { background: #fff; }
+    .theme-swatch.dark-only  { background: rgb(25,25,23); }
+    .theme-info .theme-name { font-size: 14px; font-weight: 500; color: var(--fg); letter-spacing: -.01em; }
+    .theme-info .theme-desc { font-size: 12px; color: var(--fg-2); margin-top: 2px; }
 
     /* ── Settings modal ──────────────────────────────────────────────────── */
     #settings-overlay {
       position: fixed; inset: 0; z-index: 60;
       display: none; align-items: center; justify-content: center;
       padding: 24px;
-      background: rgba(0,0,0,.4); backdrop-filter: blur(4px);
+      background: var(--modal-bg); backdrop-filter: blur(4px);
     }
     #settings-overlay.open { display: flex; }
     #settings-box {
       width: 100%; max-width: 440px;
-      background: #fff; border-radius: 16px;
-      box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 0 0 1px rgba(0,0,0,.06);
+      background: var(--bg); border-radius: 16px;
+      border: 1px solid var(--border-md);
+      box-shadow: var(--shadow);
       overflow: hidden; position: relative; font-family: var(--body);
+      transition: background 200ms, border-color 200ms;
     }
-    #settings-box .s-head {
-      padding: 24px 24px 18px;
-      border-bottom: 1px solid rgba(0,0,0,.07);
-    }
-    #settings-box .s-head h2 {
-      font-family: var(--heading); font-size: 20px; font-weight: 700;
-      color: #000; letter-spacing: -.02em; margin-bottom: 4px;
-    }
-    #settings-box .s-head p { font-size: 12.5px; color: rgba(0,0,0,.42); line-height: 1.5; }
-    .s-close {
-      position: absolute; top: 16px; right: 16px;
-      background: rgba(0,0,0,.05); border: none; border-radius: 50%;
-      width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      color: rgba(0,0,0,.5); font-size: 13px; transition: background 80ms;
-    }
-    .s-close:hover { background: rgba(0,0,0,.09); }
+    #settings-box .s-head { padding: 24px 24px 18px; border-bottom: 1px solid var(--border); transition: border-color 200ms; }
+    #settings-box .s-head h2 { font-family: var(--heading); font-size: 20px; font-weight: 700; color: var(--fg); letter-spacing: -.02em; margin-bottom: 4px; }
+    #settings-box .s-head p { font-size: 12.5px; color: var(--fg-2); line-height: 1.5; }
+    .s-close { position: absolute; top: 16px; right: 16px; background: var(--bg-0); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--fg-2); font-size: 13px; transition: background 80ms; }
+    .s-close:hover { background: var(--bg-1); }
     #settings-body { padding: 20px 24px 24px; }
-
-    /* Settings panels */
     .s-panel { display: none; }
     .s-panel.active { display: block; }
-
     .s-field { margin-bottom: 16px; }
-    .s-field label {
-      display: block; font-size: 10.5px; font-weight: 600;
-      letter-spacing: .07em; text-transform: uppercase;
-      color: rgba(0,0,0,.35); margin-bottom: 6px;
-    }
-    .s-field input {
-      width: 100%; border: none; border-bottom: 1px solid rgba(0,0,0,.12);
-      padding: 8px 0; font-family: var(--mono); font-size: 14px;
-      color: #000; outline: none; background: transparent;
-      transition: border-color 120ms;
-    }
-    .s-field input:focus { border-bottom-color: #000; }
-    .s-field .hint { font-size: 11px; color: rgba(0,0,0,.35); margin-top: 4px; line-height: 1.5; }
-
+    .s-field label { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 6px; }
+    .s-field input { width: 100%; border: none; border-bottom: 1px solid var(--border-md); padding: 8px 0; font-family: var(--mono); font-size: 14px; color: var(--fg); outline: none; background: transparent; transition: border-color 120ms, color 200ms; }
+    .s-field input:focus { border-bottom-color: var(--fg); }
+    .s-field .hint { font-size: 11px; color: var(--fg-2); margin-top: 4px; line-height: 1.5; }
     .s-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
-    .s-btn-primary {
-      background: #000; border: none; border-radius: 8px;
-      padding: 9px 20px; font-family: var(--body); font-size: 13.5px;
-      font-weight: 500; color: #fff; transition: background 80ms;
-    }
-    .s-btn-primary:hover { background: #1f1f1f; }
-    .s-btn-secondary {
-      background: transparent; border: 1px solid rgba(0,0,0,.12);
-      border-radius: 8px; padding: 9px 16px;
-      font-family: var(--body); font-size: 13.5px; font-weight: 500;
-      color: rgba(0,0,0,.65); transition: background 80ms;
-    }
-    .s-btn-secondary:hover { background: rgba(0,0,0,.04); }
-    .s-info {
-      display: flex; align-items: center; gap: 10px;
-      background: #f5f5f7; border-radius: 8px; padding: 12px 14px;
-      margin-bottom: 16px;
-    }
-    .s-info p { font-size: 13px; color: rgba(0,0,0,.55); line-height: 1.5; }
-    .s-dot-ok { width: 8px; height: 8px; border-radius: 50%; background: rgb(68,168,109); flex-shrink: 0; }
-    .s-dot-no { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,.2); flex-shrink: 0; }
-    .s-error { font-size: 12px; color: rgb(180,32,32); margin-top: 8px; display: none; }
+    .s-btn-primary { background: var(--fg); border: none; border-radius: 8px; padding: 9px 20px; font-family: var(--body); font-size: 13.5px; font-weight: 500; color: var(--bg); transition: opacity 80ms; }
+    .s-btn-primary:hover { opacity: .88; }
+    .s-btn-secondary { background: transparent; border: 1px solid var(--border-md); border-radius: 8px; padding: 9px 16px; font-family: var(--body); font-size: 13.5px; font-weight: 500; color: var(--fg-3); transition: background 80ms, border-color 200ms; }
+    .s-btn-secondary:hover { background: var(--bg-0); }
+    .s-info { display: flex; align-items: center; gap: 10px; background: var(--bg-1); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; transition: background 200ms; }
+    .s-info p { font-size: 13px; color: var(--fg-3); line-height: 1.5; }
+    .s-dot-ok { width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+    .s-dot-no { width: 8px; height: 8px; border-radius: 50%; background: var(--fg-2); flex-shrink: 0; }
+    .s-error { font-size: 12px; color: var(--danger); margin-top: 8px; display: none; }
     .s-error.show { display: block; }
-    .s-tabs { display: flex; gap: 2px; margin-bottom: 20px; background: #f5f5f7; border-radius: 8px; padding: 3px; }
-    .s-tab {
-      flex: 1; border: none; border-radius: 6px; padding: 7px 0;
-      font-family: var(--body); font-size: 12.5px; font-weight: 500;
-      color: rgba(0,0,0,.45); background: transparent; transition: background 80ms, color 80ms;
-    }
-    .s-tab.active { background: #fff; color: #000; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .s-tabs { display: flex; gap: 2px; margin-bottom: 20px; background: var(--bg-1); border-radius: 8px; padding: 3px; transition: background 200ms; }
+    .s-tab { flex: 1; border: none; border-radius: 6px; padding: 7px 0; font-family: var(--body); font-size: 12.5px; font-weight: 500; color: var(--fg-2); background: transparent; transition: background 80ms, color 80ms; }
+    .s-tab.active { background: var(--bg); color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
 
     /* ── Toast ───────────────────────────────────────────────────────────── */
     #toast {
       position: fixed; left: 50%; bottom: 28px; z-index: 80;
       transform: translateX(-50%) translateY(10px);
       opacity: 0; pointer-events: none;
-      background: rgb(30,30,30); color: #fff;
+      background: var(--fg); color: var(--bg);
       padding: 9px 18px; border-radius: 8px;
       font-size: 13.5px; font-family: var(--body);
       box-shadow: 0 4px 20px rgba(0,0,0,.22);
-      transition: opacity 180ms ease, transform 180ms ease;
+      transition: opacity 180ms ease, transform 180ms ease, background 200ms, color 200ms;
       white-space: nowrap; max-width: calc(100vw - 48px);
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -651,28 +704,25 @@
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
       align-items: center; justify-content: space-between; gap: 8px;
       padding: 12px 16px;
-      background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0,0,0,.07); font-family: var(--body);
+      background: color-mix(in srgb, var(--bg) 95%, transparent);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); font-family: var(--body);
+      transition: background 200ms, border-color 200ms;
     }
     #mobile-bar .mb-time { display: flex; align-items: center; gap: 6px; }
-    #mb-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,.2); }
-    #mb-time { font-family: var(--mono); font-size: 14px; font-weight: 600; color: #000; }
+    #mb-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--fg-2); }
+    #mb-time { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--fg); }
     #mobile-bar .mb-btns { display: flex; gap: 8px; }
-    .mb-btn {
-      border: none; border-radius: 8px; padding: 7px 14px;
-      font-family: var(--body); font-size: 13px; font-weight: 500;
-      transition: background 80ms, opacity 80ms;
-    }
-    #mb-toggle { background: #000; color: #fff; }
-    #mb-toggle:hover { background: #1f1f1f; }
-    #mb-send { background: rgba(0,0,0,.08); color: rgba(0,0,0,.3); }
-    #mb-send:not(:disabled) { background: #000; color: #fff; }
-    #mb-send:not(:disabled):hover { background: #1f1f1f; }
+    .mb-btn { border: none; border-radius: 8px; padding: 7px 14px; font-family: var(--body); font-size: 13px; font-weight: 500; transition: opacity 80ms; }
+    #mb-toggle { background: var(--fg); color: var(--bg); }
+    #mb-toggle:hover { opacity: .88; }
+    #mb-send { background: var(--bg-0); color: var(--fg-2); }
+    #mb-send:not(:disabled) { background: var(--fg); color: var(--bg); }
+    #mb-send:not(:disabled):hover { opacity: .88; }
     #mb-send:disabled { opacity: .5; }
 
     @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
 
-    /* ── Responsive ──────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
       #sidebar { display: none !important; }
       #mobile-bar { display: flex !important; }
@@ -685,12 +735,29 @@
 <!-- ── Topbar ──────────────────────────────────────────────────────────────── -->
 <header id="topbar">
   <div class="breadcrumb">
-    <span class="bc-page">✉️ Send a message to Paul Fleury</span>
+    <span class="bc-page" data-i18n="topbar_title">✉️ Send a message to Paul Fleury</span>
   </div>
-  <div class="status">
-    <span id="state-dot"></span>
-    <span id="state-label">Idle</span>
-    <button id="settings-btn" title="Settings" aria-label="Open settings">
+  <div class="controls">
+    <div id="state-pill">
+      <span id="state-dot"></span>
+      <span id="state-label" data-i18n="state_idle">Idle</span>
+    </div>
+    <!-- Theme toggle -->
+    <button class="topbar-btn" id="theme-btn" title="Appearance" aria-label="Toggle theme">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+    <!-- Language picker -->
+    <button class="topbar-btn" id="lang-btn" title="Language" aria-label="Change language">
+      <span id="lang-flag" style="font-size:16px;line-height:1">🇬🇧</span>
+    </button>
+    <!-- Settings -->
+    <button class="topbar-btn" id="settings-btn" title="Settings" aria-label="Open settings">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
@@ -700,106 +767,92 @@
 
 <!-- ── Layout ─────────────────────────────────────────────────────────────── -->
 <div id="layout">
-
-  <!-- Writing area -->
   <main id="writing-area">
     <div id="writing-header">
-      <h1>Message to Paul Fleury</h1>
-      <p>Paul reads every message personally. Hit <strong>Start</strong> when you're ready to write.</p>
+      <h1 data-i18n="page_title">Message to Paul Fleury</h1>
+      <p data-i18n="page_sub">Paul reads every message personally. Hit <strong>Start</strong> when you're ready to write.</p>
     </div>
-
     <div id="textarea-wrap">
-      <textarea id="text" placeholder="Press Start in the sidebar to begin writing…" disabled></textarea>
+      <textarea id="text" disabled></textarea>
     </div>
-
     <div id="writing-footer">
-      <div id="word-count"><span id="wc-words">0 words</span><span id="wc-chars">0 characters</span></div>
-
-      <!-- Audio block -->
+      <div id="word-count">
+        <span id="wc-words">0 words</span>
+        <span id="wc-chars">0 characters</span>
+      </div>
       <div id="audio-block" style="display:none">
         <div class="ab-left">
           <span>🎙️</span>
-          <span>Voice message</span>
+          <span data-i18n="voice_message">Voice message</span>
           <span class="ab-dur" id="ab-dur"></span>
         </div>
         <div class="ab-right">
-          <button class="ab-btn" id="ab-play">▶ Play</button>
-          <button class="ab-btn" id="ab-remove" title="Remove voice message">✕</button>
+          <button class="ab-btn" id="ab-play" data-i18n="play">▶ Play</button>
+          <button class="ab-btn" id="ab-remove" title="Remove">✕</button>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Sidebar -->
   <aside id="sidebar">
-
-    <!-- Timer -->
     <div id="timer-section">
       <div id="timer-state-row">
         <span id="timer-dot"></span>
         <span id="timer-state-lbl">IDLE</span>
       </div>
       <div id="timer-display">00:00.000</div>
-      <div id="timer-note">active writing time</div>
+      <div id="timer-note" data-i18n="active_writing_time">active writing time</div>
     </div>
 
-    <!-- Controls -->
     <div class="sb-section">
-      <p class="sb-label">Controls</p>
+      <p class="sb-label" data-i18n="controls">Controls</p>
       <div class="sbtn-group">
         <button class="sbtn primary" id="start-btn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M8 5v14l12-7z"/></svg>
-          <span id="start-lbl">Start</span>
+          <span id="start-lbl" data-i18n="start">Start</span>
           <span class="sc">Space</span>
         </button>
         <button class="sbtn" id="pause-btn" disabled>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 5v14M17 5v14"/></svg>
-          Pause
+          <span data-i18n="pause">Pause</span>
           <span class="sc">Esc</span>
         </button>
         <button class="sbtn danger" id="reset-btn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 7h12M10 7l1-2h2l1 2M9 7v14m6-14v14"/></svg>
-          Reset
+          <span data-i18n="reset">Reset</span>
         </button>
       </div>
     </div>
 
-    <!-- Attachments -->
     <div class="sb-section">
-      <p class="sb-label">Attachments</p>
+      <p class="sb-label" data-i18n="attachments">Attachments</p>
       <div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">
-        <!-- File upload drop zone -->
-        <div id="file-drop" tabindex="0" role="button" aria-label="Attach file — click or drag">
-          <span class="fd-icon">📎</span>
-          <span id="fd-label">Attach file</span>
-          <span class="fd-hint" id="fd-hint">or drag</span>
+        <div id="file-drop" tabindex="0" role="button">
+          <span>📎</span>
+          <span id="fd-label" data-i18n="attach_file">Attach file</span>
+          <span class="fd-hint" id="fd-hint" data-i18n="or_drag">or drag</span>
         </div>
         <input type="file" id="file-input" multiple style="display:none" />
         <div id="file-list"></div>
-
-        <!-- Voice -->
         <button class="sbtn" id="voice-btn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          Record voice
+          <span data-i18n="record_voice">Record voice</span>
           <span class="badge" id="voice-badge" style="display:none">1</span>
         </button>
       </div>
     </div>
 
-    <!-- Share -->
     <div class="sb-section">
-      <p class="sb-label">Send</p>
-      <div class="sbtn-group">
-      </div>
+      <p class="sb-label" data-i18n="send_label">Send</p>
       <button class="sbtn" id="send-btn" disabled>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        Send to Paul
+        <span data-i18n="send_to_paul">Send to Paul</span>
         <span class="sc" id="send-sc">⌘↵</span>
       </button>
     </div>
 
-    <div id="sb-footer">
-      Timer only runs while <em>Start</em> is active. Voice and files are uploaded securely — email is sent via Resend.
+    <div id="sb-footer" data-i18n="sidebar_footer">
+      Timer only runs while Start is active. Voice and files are uploaded securely.
     </div>
   </aside>
 </div>
@@ -807,21 +860,21 @@
 <!-- ── Welcome modal ──────────────────────────────────────────────────────── -->
 <div id="welcome-overlay">
   <div id="welcome-card">
-    <p class="eyebrow">Message to Paul Fleury</p>
-    <h1>Say something worth writing.</h1>
-    <p class="desc">This is a timed writing canvas. The clock only runs while you type — so every second counted is a second spent actually writing.</p>
-    <p class="desc">When you're done, your message is sent directly to Paul by email — with any voice note or files attached.</p>
+    <p class="eyebrow" data-i18n="welcome_eyebrow">Message to Paul Fleury</p>
+    <h1 data-i18n="welcome_title">Say something worth writing.</h1>
+    <p class="desc" data-i18n="welcome_desc1">This is a timed writing canvas. The clock only runs while you type — so every second counted is a second spent actually writing.</p>
+    <p class="desc" data-i18n="welcome_desc2">When you're done, your message is sent directly to Paul by email — with any voice note or files attached.</p>
     <div class="divider"></div>
     <div id="welcome-steps">
-      <div class="wstep"><span class="wstep-n">1</span><span class="wstep-lbl">Hit Start — the timer begins.</span></div>
-      <div class="wstep"><span class="wstep-n">2</span><span class="wstep-lbl">Write freely. Attach files or a voice note.</span></div>
-      <div class="wstep"><span class="wstep-n">3</span><span class="wstep-lbl">Send Paul the message when ready.</span></div>
+      <div class="wstep"><span class="wstep-n">1</span><span class="wstep-lbl" data-i18n="step1">Hit Start — the timer begins.</span></div>
+      <div class="wstep"><span class="wstep-n">2</span><span class="wstep-lbl" data-i18n="step2">Write freely. Attach files or a voice note.</span></div>
+      <div class="wstep"><span class="wstep-n">3</span><span class="wstep-lbl" data-i18n="step3">Send Paul the message when ready.</span></div>
     </div>
     <button id="welcome-start">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M8 5v14l12-7z"/></svg>
-      Start writing
+      <span data-i18n="start_writing">Start writing</span>
     </button>
-    <p id="welcome-hint">Timer starts immediately. You can pause at any time with <span class="kbd">Esc</span></p>
+    <p id="welcome-hint" data-i18n="welcome_hint">Timer starts immediately. You can pause at any time with <span class="kbd">Esc</span></p>
   </div>
 </div>
 
@@ -829,85 +882,72 @@
 <div id="send-overlay" class="modal-overlay">
   <div class="modal-box">
     <button class="modal-close" id="send-close">✕</button>
-
-    <!-- Form step -->
     <div id="form-step">
       <div class="modal-head">
-        <h2>Send to Paul</h2>
-        <p class="msub">Your message is ready to share.</p>
+        <h2 data-i18n="send_modal_title">Send to Paul</h2>
+        <p class="msub" data-i18n="send_modal_sub">Your message is ready to share.</p>
         <div class="modal-stats">
-          <div class="stat-cell"><div class="stat-lbl">Active time</div><div class="stat-val mono" id="modal-time">00:00.000</div></div>
-          <div class="stat-cell"><div class="stat-lbl">Words</div><div class="stat-val" id="modal-words">0</div></div>
-          <div class="stat-cell"><div class="stat-lbl">Characters</div><div class="stat-val" id="modal-chars">0</div></div>
+          <div class="stat-cell"><div class="stat-lbl" data-i18n="stat_time">Active time</div><div class="stat-val mono" id="modal-time">00:00.000</div></div>
+          <div class="stat-cell"><div class="stat-lbl" data-i18n="stat_words">Words</div><div class="stat-val" id="modal-words">0</div></div>
+          <div class="stat-cell"><div class="stat-lbl" data-i18n="stat_chars">Characters</div><div class="stat-val" id="modal-chars">0</div></div>
         </div>
       </div>
       <div class="modal-body">
         <div class="mfield">
-          <label for="sender-name">Your name</label>
-          <input type="text" id="sender-name" placeholder="Jane Doe" />
+          <label data-i18n="your_name">Your name</label>
+          <input type="text" id="sender-name" data-i18n-placeholder="name_placeholder" placeholder="Jane Doe" />
         </div>
         <div class="mfield">
-          <label for="sender-contact">How Paul can reach you</label>
-          <input type="text" id="sender-contact" placeholder="Email, Telegram, phone…" />
+          <label data-i18n="how_reach">How Paul can reach you</label>
+          <input type="text" id="sender-contact" data-i18n-placeholder="contact_placeholder" placeholder="Email, Telegram, phone…" />
         </div>
-        <p class="msend-label">Send via</p>
+        <p class="msend-label" data-i18n="send_via">Send via</p>
         <button class="mbtn-email" id="mbtn-email">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
-          Send email to Paul
+          <span data-i18n="send_email_btn">Send email to Paul</span>
           <span class="mbtn-hint" id="mbtn-email-hint"></span>
         </button>
         <button class="mbtn-copy" id="mbtn-copy">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke-linecap="round"/></svg>
-          Open email client
-          <span class="mbtn-hint">Fallback</span>
+          <span data-i18n="open_email_client">Open email client</span>
+          <span class="mbtn-hint" data-i18n="fallback">Fallback</span>
         </button>
       </div>
       <div class="modal-foot">
         <div class="modal-foot-dot"></div>
-        <p id="modal-foot-note">Email sent via Resend directly to Paul. Files hosted temporarily in /cache/.</p>
+        <p data-i18n="modal_foot_note">Email sent via Resend directly to Paul. Files hosted temporarily in /cache/.</p>
       </div>
     </div>
-
-    <!-- Sending step -->
     <div id="send-progress">
       <div class="spinner"></div>
-      <p>Uploading files and sending message…</p>
+      <p data-i18n="sending">Uploading files and sending message…</p>
     </div>
-
-    <!-- Sent step -->
     <div id="sent-step" style="display:none">
       <div class="sent-icon">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </div>
-      <h2>Message sent!</h2>
-      <p>Paul will receive your message in his inbox. He reads every one personally.</p>
+      <h2 data-i18n="sent_title">Message sent!</h2>
+      <p data-i18n="sent_sub">Paul will receive your message in his inbox. He reads every one personally.</p>
       <div id="sent-recap">
-        <span id="sr-time"></span>
-        <span>·</span>
-        <span id="sr-words"></span>
-        <span>·</span>
-        <span id="sr-chars"></span>
+        <span id="sr-time"></span><span>·</span><span id="sr-words"></span><span>·</span><span id="sr-chars"></span>
       </div>
       <div id="sent-actions">
-        <button class="sent-back" id="sent-back">← Write another</button>
+        <button class="sent-back" id="sent-back" data-i18n="write_another">← Write another</button>
         <a href="https://paulfleury.com" class="sent-goto" target="_blank" rel="noopener">
-          Go to paulfleury.com
+          <span data-i18n="go_to_paul">Go to paulfleury.com</span>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>
       </div>
     </div>
-
-    <!-- Error step -->
     <div id="error-step" style="display:none">
       <div class="error-icon">⚠️</div>
-      <h2>Something went wrong</h2>
-      <p id="error-msg">Could not send your message. Please try again.</p>
+      <h2 data-i18n="error_title">Something went wrong</h2>
+      <p id="error-msg"></p>
       <div class="error-actions">
-        <button class="err-back" id="err-back">← Back</button>
-        <button class="err-retry" id="err-retry">Try again</button>
+        <button class="err-back" id="err-back" data-i18n="back">← Back</button>
+        <button class="err-retry" id="err-retry" data-i18n="try_again">Try again</button>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -915,7 +955,7 @@
 <div id="voice-overlay">
   <div id="voice-box">
     <div id="voice-title-row">
-      <span>🎙️&nbsp; Voice message</span>
+      <span>🎙️&nbsp; <span data-i18n="voice_modal_title">Voice message</span></span>
       <button id="voice-close">✕</button>
     </div>
     <div id="voice-error"><span>⚠️</span><span id="voice-error-msg"></span></div>
@@ -923,10 +963,60 @@
     <div id="voice-rec-indicator"><span class="rec-dot"></span>REC</div>
     <div id="voice-timer" style="margin-top:16px">00:00</div>
     <div id="voice-actions">
-      <button class="rec-circle" id="rec-start" title="Start recording" aria-label="Start recording">
+      <button class="rec-circle" id="rec-start" aria-label="Start recording">
         <span style="color:#fff;font-size:20px;line-height:1;margin-top:-1px">●</span>
       </button>
-      <p id="voice-rec-note">Click to start recording</p>
+      <p id="voice-rec-note" data-i18n="click_to_record" style="margin-top:10px;font-size:13px;color:var(--fg-2)">Click to start recording</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Language modal ────────────────────────────────────────────────────── -->
+<div id="lang-overlay">
+  <div id="lang-box">
+    <div class="l-head">
+      <div>
+        <h2 data-i18n="lang_title">Language</h2>
+        <p data-i18n="lang_sub">Choose your preferred language</p>
+      </div>
+      <button class="l-close" id="lang-close">✕</button>
+    </div>
+    <div id="lang-list"></div>
+  </div>
+</div>
+
+<!-- ── Theme modal ───────────────────────────────────────────────────────── -->
+<div id="theme-overlay">
+  <div id="theme-box">
+    <div class="t-head">
+      <div>
+        <h2 data-i18n="theme_title">Appearance</h2>
+        <p data-i18n="theme_sub">Choose your preferred theme</p>
+      </div>
+      <button class="t-close" id="theme-close">✕</button>
+    </div>
+    <div id="theme-list">
+      <button class="theme-item" data-theme-val="light">
+        <div class="theme-swatch light-only"></div>
+        <div class="theme-info">
+          <div class="theme-name" data-i18n="theme_light">Light</div>
+          <div class="theme-desc" data-i18n="theme_light_desc">Clean white interface</div>
+        </div>
+      </button>
+      <button class="theme-item" data-theme-val="dark">
+        <div class="theme-swatch dark-only"></div>
+        <div class="theme-info">
+          <div class="theme-name" data-i18n="theme_dark">Dark</div>
+          <div class="theme-desc" data-i18n="theme_dark_desc">Easy on the eyes at night</div>
+        </div>
+      </button>
+      <button class="theme-item" data-theme-val="system">
+        <div class="theme-swatch"><div class="sw-l"></div><div class="sw-d"></div></div>
+        <div class="theme-info">
+          <div class="theme-name" data-i18n="theme_system">System</div>
+          <div class="theme-desc" data-i18n="theme_system_desc">Follows your OS setting</div>
+        </div>
+      </button>
     </div>
   </div>
 </div>
@@ -935,89 +1025,71 @@
 <div id="settings-overlay">
   <div id="settings-box">
     <div class="s-head">
-      <h2>Settings</h2>
-      <p>Configure the Resend API key used to deliver messages to Paul.</p>
+      <h2 data-i18n="settings_title">Settings</h2>
+      <p data-i18n="settings_sub">Configure the Resend API key used to deliver messages to Paul.</p>
     </div>
     <button class="s-close" id="settings-close">✕</button>
-
     <div id="settings-body">
-
-      <!-- Panel: PIN gate (shown if key exists) -->
       <div class="s-panel" id="panel-pin">
-        <div class="s-info">
-          <div class="s-dot-ok"></div>
-          <p>An API key is configured. Enter your PIN to access or modify settings.</p>
-        </div>
+        <div class="s-info"><div class="s-dot-ok"></div><p data-i18n="pin_info">An API key is configured. Enter your PIN to access or modify settings.</p></div>
         <div class="s-field">
-          <label>PIN</label>
-          <input type="password" id="s-pin-input" placeholder="Enter PIN" maxlength="20" autocomplete="off" />
-          <div class="hint">Default PIN is <strong>1234</strong></div>
-          <div class="s-error" id="s-pin-error">Incorrect PIN.</div>
+          <label data-i18n="pin_label">PIN</label>
+          <input type="password" id="s-pin-input" data-i18n-placeholder="pin_placeholder" placeholder="Enter PIN" maxlength="20" autocomplete="off" />
+          <div class="hint" data-i18n="pin_hint">Default PIN is <strong>1234</strong></div>
+          <div class="s-error" id="s-pin-error" data-i18n="pin_error">Incorrect PIN.</div>
         </div>
         <div class="s-actions">
-          <button class="s-btn-secondary" id="s-pin-cancel">Cancel</button>
-          <button class="s-btn-primary" id="s-pin-verify">Unlock →</button>
+          <button class="s-btn-secondary" id="s-pin-cancel" data-i18n="cancel">Cancel</button>
+          <button class="s-btn-primary" id="s-pin-verify" data-i18n="unlock">Unlock →</button>
         </div>
       </div>
-
-      <!-- Panel: Setup (no key yet) -->
       <div class="s-panel" id="panel-setup">
-        <div class="s-info">
-          <div class="s-dot-no"></div>
-          <p>No API key configured yet. Add your Resend key to enable email delivery.</p>
-        </div>
+        <div class="s-info"><div class="s-dot-no"></div><p data-i18n="setup_info">No API key configured yet. Add your Resend key to enable email delivery.</p></div>
         <div class="s-field">
-          <label>Resend API Key</label>
+          <label data-i18n="api_key_label">Resend API Key</label>
           <input type="password" id="s-apikey-setup" placeholder="re_xxxxxxxxxxxxxxxx" autocomplete="off" />
-          <div class="hint">Get yours at <a href="https://resend.com" target="_blank" rel="noopener" style="color:inherit;">resend.com</a></div>
+          <div class="hint" data-i18n="api_key_hint">Get yours at <a href="https://resend.com" target="_blank" rel="noopener" style="color:inherit;">resend.com</a></div>
         </div>
         <div class="s-field">
-          <label>Set PIN</label>
-          <input type="password" id="s-pin-setup" placeholder="Choose a PIN (min 4 chars)" maxlength="20" autocomplete="new-password" />
-          <div class="hint">You'll need this to update settings later.</div>
+          <label data-i18n="set_pin_label">Set PIN</label>
+          <input type="password" id="s-pin-setup" data-i18n-placeholder="set_pin_placeholder" placeholder="Choose a PIN (min 4 chars)" maxlength="20" autocomplete="new-password" />
+          <div class="hint" data-i18n="set_pin_hint">You'll need this to update settings later.</div>
           <div class="s-error" id="s-setup-error"></div>
         </div>
         <div class="s-actions">
-          <button class="s-btn-secondary" id="s-setup-cancel">Cancel</button>
-          <button class="s-btn-primary" id="s-setup-save">Save & Enable</button>
+          <button class="s-btn-secondary" id="s-setup-cancel" data-i18n="cancel">Cancel</button>
+          <button class="s-btn-primary" id="s-setup-save" data-i18n="save_enable">Save & Enable</button>
         </div>
       </div>
-
-      <!-- Panel: Manage (unlocked) -->
       <div class="s-panel" id="panel-manage">
         <div class="s-tabs">
-          <button class="s-tab active" data-tab="key">API Key</button>
-          <button class="s-tab" data-tab="pin">Change PIN</button>
+          <button class="s-tab active" data-tab="key" data-i18n="tab_api_key">API Key</button>
+          <button class="s-tab" data-tab="pin" data-i18n="tab_change_pin">Change PIN</button>
         </div>
-
-        <!-- Tab: API Key -->
         <div id="tab-key">
           <div class="s-field">
-            <label>Resend API Key</label>
+            <label data-i18n="api_key_label">Resend API Key</label>
             <input type="password" id="s-apikey-manage" placeholder="re_xxxxxxxxxxxxxxxx" autocomplete="off" />
-            <div class="hint">Leave blank to keep the current key.</div>
+            <div class="hint" data-i18n="manage_key_hint">Leave blank to keep the current key.</div>
             <div class="s-error" id="s-manage-error"></div>
           </div>
           <div class="s-actions">
-            <button class="s-btn-secondary" id="s-manage-close">Close</button>
-            <button class="s-btn-primary" id="s-manage-save">Save Key</button>
+            <button class="s-btn-secondary" id="s-manage-close" data-i18n="close">Close</button>
+            <button class="s-btn-primary" id="s-manage-save" data-i18n="save_key">Save Key</button>
           </div>
         </div>
-
-        <!-- Tab: Change PIN -->
         <div id="tab-pin" style="display:none">
           <div class="s-field">
-            <label>New PIN</label>
-            <input type="password" id="s-new-pin" placeholder="New PIN (min 4 chars)" maxlength="20" autocomplete="new-password" />
+            <label data-i18n="new_pin_label">New PIN</label>
+            <input type="password" id="s-new-pin" data-i18n-placeholder="new_pin_placeholder" placeholder="New PIN (min 4 chars)" maxlength="20" autocomplete="new-password" />
             <div class="s-error" id="s-pin-change-error"></div>
           </div>
           <div class="s-actions">
-            <button class="s-btn-secondary" id="s-pin-tab-cancel">Cancel</button>
-            <button class="s-btn-primary" id="s-change-pin-btn">Update PIN</button>
+            <button class="s-btn-secondary" id="s-pin-tab-cancel" data-i18n="cancel">Cancel</button>
+            <button class="s-btn-primary" id="s-change-pin-btn" data-i18n="update_pin">Update PIN</button>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -1032,213 +1104,833 @@
     <span id="mb-time">00:00.000</span>
   </div>
   <div class="mb-btns">
-    <button class="mb-btn" id="mb-toggle">Start</button>
-    <button class="mb-btn" id="mb-send" disabled>Send</button>
+    <button class="mb-btn" id="mb-toggle" data-i18n="start">Start</button>
+    <button class="mb-btn" id="mb-send" disabled data-i18n="send_label">Send</button>
   </div>
 </div>
 
-<!-- ── Script ─────────────────────────────────────────────────────────────── -->
 <script>
 (function () {
   'use strict';
 
-  /* ── Platform detection ──────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * TRANSLATIONS
+   * ════════════════════════════════════════════════════════════════════════ */
+  const LANGS = {
+    en: { flag:'🇬🇧', name:'English',    native:'English'    },
+    fr: { flag:'🇫🇷', name:'French',     native:'Français'   },
+    de: { flag:'🇩🇪', name:'German',     native:'Deutsch'    },
+    it: { flag:'🇮🇹', name:'Italian',    native:'Italiano'   },
+    es: { flag:'🇪🇸', name:'Spanish',    native:'Español'    },
+    nl: { flag:'🇳🇱', name:'Dutch',      native:'Nederlands' },
+    zh: { flag:'🇨🇳', name:'Chinese',    native:'中文'       },
+    hi: { flag:'🇮🇳', name:'Hindi',      native:'हिन्दी'     },
+    ja: { flag:'🇯🇵', name:'Japanese',   native:'日本語'     },
+    ru: { flag:'🇷🇺', name:'Russian',    native:'Русский'    },
+  };
+
+  const T = {
+    en: {
+      topbar_title:'✉️ Send a message to Paul Fleury',
+      state_idle:'Idle', state_running:'Running', state_paused:'Paused',
+      page_title:'Message to Paul Fleury',
+      page_sub:'Paul reads every message personally. Hit <strong>Start</strong> when you\'re ready to write.',
+      active_writing_time:'active writing time',
+      controls:'Controls', start:'Start', pause:'Pause', reset:'Reset',
+      attachments:'Attachments', attach_file:'Attach file', or_drag:'or drag',
+      record_voice:'Record voice', send_label:'Send', send_to_paul:'Send to Paul',
+      sidebar_footer:'Timer only runs while Start is active. Voice and files are uploaded securely.',
+      welcome_eyebrow:'Message to Paul Fleury',
+      welcome_title:'Say something worth writing.',
+      welcome_desc1:'This is a timed writing canvas. The clock only runs while you type — so every second counted is a second spent actually writing.',
+      welcome_desc2:'When you\'re done, your message is sent directly to Paul by email — with any voice note or files attached.',
+      step1:'Hit Start — the timer begins.',
+      step2:'Write freely. Attach files or a voice note.',
+      step3:'Send Paul the message when ready.',
+      start_writing:'Start writing',
+      welcome_hint:'Timer starts immediately. You can pause at any time with Esc',
+      textarea_placeholder:'Write your message…',
+      textarea_disabled:'Press Start in the sidebar to begin writing…',
+      words:'words', word:'word', characters:'characters', character:'character',
+      voice_message:'Voice message', play:'▶ Play', pause_play:'⏸ Pause',
+      send_modal_title:'Send to Paul',
+      send_modal_sub:'Your message is ready to share.',
+      stat_time:'Active time', stat_words:'Words', stat_chars:'Characters',
+      your_name:'Your name', name_placeholder:'Jane Doe',
+      how_reach:'How Paul can reach you', contact_placeholder:'Email, Telegram, phone…',
+      send_via:'Send via',
+      send_email_btn:'Send email to Paul', open_email_client:'Open email client', fallback:'Fallback',
+      modal_foot_note:'Email sent via Resend directly to Paul. Files hosted temporarily in /cache/.',
+      sending:'Uploading files and sending message…',
+      sent_title:'Message sent!',
+      sent_sub:'Paul will receive your message in his inbox. He reads every one personally.',
+      write_another:'← Write another', go_to_paul:'Go to paulfleury.com',
+      error_title:'Something went wrong', back:'← Back', try_again:'Try again',
+      voice_modal_title:'Voice message', click_to_record:'Click to start recording',
+      mic_error:'Microphone access is required to record a voice message.',
+      click_to_stop:'Click to stop',
+      lang_title:'Language', lang_sub:'Choose your preferred language',
+      theme_title:'Appearance', theme_sub:'Choose your preferred theme',
+      theme_light:'Light', theme_light_desc:'Clean white interface',
+      theme_dark:'Dark', theme_dark_desc:'Easy on the eyes at night',
+      theme_system:'System', theme_system_desc:'Follows your OS setting',
+      settings_title:'Settings',
+      settings_sub:'Configure the Resend API key used to deliver messages to Paul.',
+      pin_info:'An API key is configured. Enter your PIN to access or modify settings.',
+      pin_label:'PIN', pin_placeholder:'Enter PIN', pin_hint:'Default PIN is 1234',
+      pin_error:'Incorrect PIN.',
+      setup_info:'No API key configured yet. Add your Resend key to enable email delivery.',
+      api_key_label:'Resend API Key', api_key_hint:'Get yours at resend.com',
+      set_pin_label:'Set PIN', set_pin_placeholder:'Choose a PIN (min 4 chars)',
+      set_pin_hint:'You\'ll need this to update settings later.',
+      manage_key_hint:'Leave blank to keep the current key.',
+      tab_api_key:'API Key', tab_change_pin:'Change PIN',
+      new_pin_label:'New PIN', new_pin_placeholder:'New PIN (min 4 chars)',
+      cancel:'Cancel', unlock:'Unlock →', save_enable:'Save & Enable',
+      close:'Close', save_key:'Save Key', update_pin:'Update PIN',
+      toast_attached_1:'1 file attached.',
+      toast_attached_n:'%n files attached.',
+      toast_voice_attached:'Voice message attached.',
+      toast_settings_saved:'Settings saved. Email delivery enabled.',
+      toast_api_updated:'API key updated.',
+      toast_pin_updated:'PIN updated.',
+      toast_copied:'Copied.',
+      toast_write_first:'Write something first!',
+    },
+    fr: {
+      topbar_title:'✉️ Envoyer un message à Paul Fleury',
+      state_idle:'Inactif', state_running:'En cours', state_paused:'En pause',
+      page_title:'Message à Paul Fleury',
+      page_sub:'Paul lit chaque message personnellement. Cliquez sur <strong>Démarrer</strong> pour commencer à écrire.',
+      active_writing_time:'temps d\'écriture actif',
+      controls:'Contrôles', start:'Démarrer', pause:'Pause', reset:'Réinitialiser',
+      attachments:'Pièces jointes', attach_file:'Joindre un fichier', or_drag:'ou glisser',
+      record_voice:'Enregistrer la voix', send_label:'Envoyer', send_to_paul:'Envoyer à Paul',
+      sidebar_footer:'Le minuteur ne tourne que pendant l\'écriture. Fichiers transmis en toute sécurité.',
+      welcome_eyebrow:'Message à Paul Fleury',
+      welcome_title:'Dites quelque chose qui vaut la peine d\'être écrit.',
+      welcome_desc1:'C\'est un canvas d\'écriture chronométré. L\'horloge tourne uniquement pendant que vous tapez — chaque seconde comptée est une seconde vraiment passée à écrire.',
+      welcome_desc2:'Une fois terminé, votre message est envoyé directement à Paul par e-mail, avec toute note vocale ou fichier joint.',
+      step1:'Cliquez sur Démarrer — le chrono commence.',
+      step2:'Écrivez librement. Joignez des fichiers ou une note vocale.',
+      step3:'Envoyez le message à Paul quand vous êtes prêt.',
+      start_writing:'Commencer à écrire',
+      welcome_hint:'Le chrono démarre immédiatement. Vous pouvez faire une pause avec Échap',
+      textarea_placeholder:'Rédigez votre message…',
+      textarea_disabled:'Appuyez sur Démarrer pour commencer à écrire…',
+      words:'mots', word:'mot', characters:'caractères', character:'caractère',
+      voice_message:'Message vocal', play:'▶ Écouter', pause_play:'⏸ Pause',
+      send_modal_title:'Envoyer à Paul', send_modal_sub:'Votre message est prêt.',
+      stat_time:'Temps actif', stat_words:'Mots', stat_chars:'Caractères',
+      your_name:'Votre nom', name_placeholder:'Jean Dupont',
+      how_reach:'Comment Paul peut vous contacter', contact_placeholder:'E-mail, Telegram, téléphone…',
+      send_via:'Envoyer via',
+      send_email_btn:'Envoyer un e-mail à Paul', open_email_client:'Ouvrir le client mail', fallback:'Alternatif',
+      modal_foot_note:'E-mail envoyé via Resend directement à Paul. Fichiers hébergés temporairement dans /cache/.',
+      sending:'Envoi du message en cours…',
+      sent_title:'Message envoyé !',
+      sent_sub:'Paul recevra votre message dans sa boîte mail. Il lit chacun personnellement.',
+      write_another:'← Écrire un autre', go_to_paul:'Aller sur paulfleury.com',
+      error_title:'Une erreur est survenue', back:'← Retour', try_again:'Réessayer',
+      voice_modal_title:'Message vocal', click_to_record:'Cliquez pour enregistrer',
+      mic_error:'L\'accès au microphone est nécessaire pour enregistrer un message vocal.',
+      click_to_stop:'Cliquez pour arrêter',
+      lang_title:'Langue', lang_sub:'Choisissez votre langue',
+      theme_title:'Apparence', theme_sub:'Choisissez votre thème',
+      theme_light:'Clair', theme_light_desc:'Interface blanche et épurée',
+      theme_dark:'Sombre', theme_dark_desc:'Reposant pour les yeux la nuit',
+      theme_system:'Système', theme_system_desc:'Suit les réglages de votre OS',
+      settings_title:'Paramètres', settings_sub:'Configurez la clé API Resend.',
+      pin_info:'Une clé API est configurée. Entrez votre PIN pour accéder aux paramètres.',
+      pin_label:'PIN', pin_placeholder:'Entrez le PIN', pin_hint:'Le PIN par défaut est 1234',
+      pin_error:'PIN incorrect.',
+      setup_info:'Aucune clé API configurée. Ajoutez votre clé Resend pour activer l\'envoi.',
+      api_key_label:'Clé API Resend', api_key_hint:'Obtenez la vôtre sur resend.com',
+      set_pin_label:'Définir un PIN', set_pin_placeholder:'Choisissez un PIN (min 4 caractères)',
+      set_pin_hint:'Vous en aurez besoin pour modifier les paramètres.',
+      manage_key_hint:'Laissez vide pour conserver la clé actuelle.',
+      tab_api_key:'Clé API', tab_change_pin:'Changer le PIN',
+      new_pin_label:'Nouveau PIN', new_pin_placeholder:'Nouveau PIN (min 4 caractères)',
+      cancel:'Annuler', unlock:'Déverrouiller →', save_enable:'Enregistrer et activer',
+      close:'Fermer', save_key:'Enregistrer la clé', update_pin:'Mettre à jour le PIN',
+      toast_attached_1:'1 fichier joint.', toast_attached_n:'%n fichiers joints.',
+      toast_voice_attached:'Message vocal joint.', toast_settings_saved:'Paramètres enregistrés.',
+      toast_api_updated:'Clé API mise à jour.', toast_pin_updated:'PIN mis à jour.',
+      toast_copied:'Copié.', toast_write_first:'Écrivez d\'abord quelque chose !',
+    },
+    de: {
+      topbar_title:'✉️ Nachricht an Paul Fleury senden',
+      state_idle:'Bereit', state_running:'Läuft', state_paused:'Pausiert',
+      page_title:'Nachricht an Paul Fleury',
+      page_sub:'Paul liest jede Nachricht persönlich. Klicken Sie auf <strong>Starten</strong>, um zu schreiben.',
+      active_writing_time:'aktive Schreibzeit',
+      controls:'Steuerung', start:'Starten', pause:'Pause', reset:'Zurücksetzen',
+      attachments:'Anhänge', attach_file:'Datei anhängen', or_drag:'oder ziehen',
+      record_voice:'Stimme aufnehmen', send_label:'Senden', send_to_paul:'An Paul senden',
+      sidebar_footer:'Der Timer läuft nur beim Schreiben. Dateien werden sicher übertragen.',
+      welcome_eyebrow:'Nachricht an Paul Fleury',
+      welcome_title:'Sagen Sie etwas, das es wert ist, geschrieben zu werden.',
+      welcome_desc1:'Dies ist eine zeitgesteuerte Schreibfläche. Die Uhr läuft nur, während Sie tippen — jede gezählte Sekunde ist eine echte Schreibsekunde.',
+      welcome_desc2:'Wenn Sie fertig sind, wird Ihre Nachricht direkt per E-Mail an Paul gesendet — mit Sprachnachricht oder Dateien.',
+      step1:'Starten klicken — der Timer beginnt.',
+      step2:'Frei schreiben. Dateien oder Sprachnachricht anhängen.',
+      step3:'Nachricht an Paul senden, wenn bereit.',
+      start_writing:'Schreiben beginnen',
+      welcome_hint:'Timer startet sofort. Pause jederzeit mit Esc',
+      textarea_placeholder:'Ihre Nachricht schreiben…',
+      textarea_disabled:'Klicken Sie auf Starten, um zu beginnen…',
+      words:'Wörter', word:'Wort', characters:'Zeichen', character:'Zeichen',
+      voice_message:'Sprachnachricht', play:'▶ Abspielen', pause_play:'⏸ Pause',
+      send_modal_title:'An Paul senden', send_modal_sub:'Ihre Nachricht ist bereit.',
+      stat_time:'Aktive Zeit', stat_words:'Wörter', stat_chars:'Zeichen',
+      your_name:'Ihr Name', name_placeholder:'Max Mustermann',
+      how_reach:'Wie Paul Sie erreichen kann', contact_placeholder:'E-Mail, Telegram, Telefon…',
+      send_via:'Senden über',
+      send_email_btn:'E-Mail an Paul senden', open_email_client:'E-Mail-Programm öffnen', fallback:'Fallback',
+      modal_foot_note:'E-Mail über Resend direkt an Paul gesendet.',
+      sending:'Dateien werden hochgeladen und Nachricht gesendet…',
+      sent_title:'Nachricht gesendet!',
+      sent_sub:'Paul erhält Ihre Nachricht in seinem Posteingang. Er liest jede persönlich.',
+      write_another:'← Weitere schreiben', go_to_paul:'Zu paulfleury.com',
+      error_title:'Etwas ist schiefgelaufen', back:'← Zurück', try_again:'Erneut versuchen',
+      voice_modal_title:'Sprachnachricht', click_to_record:'Klicken zum Aufnehmen',
+      mic_error:'Mikrofonzugriff erforderlich.',
+      click_to_stop:'Klicken zum Stoppen',
+      lang_title:'Sprache', lang_sub:'Bevorzugte Sprache wählen',
+      theme_title:'Erscheinungsbild', theme_sub:'Bevorzugtes Theme wählen',
+      theme_light:'Hell', theme_light_desc:'Saubere weiße Oberfläche',
+      theme_dark:'Dunkel', theme_dark_desc:'Augenschonend bei Nacht',
+      theme_system:'System', theme_system_desc:'Folgt den OS-Einstellungen',
+      settings_title:'Einstellungen', settings_sub:'Resend API-Schlüssel konfigurieren.',
+      pin_info:'Ein API-Schlüssel ist konfiguriert. PIN eingeben.',
+      pin_label:'PIN', pin_placeholder:'PIN eingeben', pin_hint:'Standard-PIN ist 1234',
+      pin_error:'Falscher PIN.',
+      setup_info:'Kein API-Schlüssel. Resend-Schlüssel hinzufügen.',
+      api_key_label:'Resend API-Schlüssel', api_key_hint:'Auf resend.com erhältlich',
+      set_pin_label:'PIN festlegen', set_pin_placeholder:'PIN wählen (min. 4 Zeichen)',
+      set_pin_hint:'Für spätere Änderungen benötigt.',
+      manage_key_hint:'Leer lassen, um den aktuellen Schlüssel zu behalten.',
+      tab_api_key:'API-Schlüssel', tab_change_pin:'PIN ändern',
+      new_pin_label:'Neuer PIN', new_pin_placeholder:'Neuer PIN (min. 4 Zeichen)',
+      cancel:'Abbrechen', unlock:'Entsperren →', save_enable:'Speichern & Aktivieren',
+      close:'Schließen', save_key:'Schlüssel speichern', update_pin:'PIN aktualisieren',
+      toast_attached_1:'1 Datei angehängt.', toast_attached_n:'%n Dateien angehängt.',
+      toast_voice_attached:'Sprachnachricht angehängt.', toast_settings_saved:'Einstellungen gespeichert.',
+      toast_api_updated:'API-Schlüssel aktualisiert.', toast_pin_updated:'PIN aktualisiert.',
+      toast_copied:'Kopiert.', toast_write_first:'Bitte zuerst etwas schreiben!',
+    },
+    it: {
+      topbar_title:'✉️ Invia un messaggio a Paul Fleury',
+      state_idle:'Inattivo', state_running:'In corso', state_paused:'In pausa',
+      page_title:'Messaggio a Paul Fleury',
+      page_sub:'Paul legge ogni messaggio personalmente. Premi <strong>Avvia</strong> per scrivere.',
+      active_writing_time:'tempo di scrittura attivo',
+      controls:'Controlli', start:'Avvia', pause:'Pausa', reset:'Reimposta',
+      attachments:'Allegati', attach_file:'Allega file', or_drag:'o trascina',
+      record_voice:'Registra voce', send_label:'Invia', send_to_paul:'Invia a Paul',
+      sidebar_footer:'Il timer gira solo durante la scrittura. I file vengono caricati in modo sicuro.',
+      welcome_eyebrow:'Messaggio a Paul Fleury',
+      welcome_title:'Di\' qualcosa che valga la pena scrivere.',
+      welcome_desc1:'È una tela di scrittura cronometrata. L\'orologio gira solo mentre scrivi.',
+      welcome_desc2:'Una volta terminato, il tuo messaggio viene inviato direttamente a Paul via e-mail.',
+      step1:'Premi Avvia — il timer inizia.',
+      step2:'Scrivi liberamente. Allega file o note vocali.',
+      step3:'Invia il messaggio a Paul quando sei pronto.',
+      start_writing:'Inizia a scrivere',
+      welcome_hint:'Il timer parte subito. Puoi mettere in pausa con Esc',
+      textarea_placeholder:'Scrivi il tuo messaggio…',
+      textarea_disabled:'Premi Avvia per iniziare a scrivere…',
+      words:'parole', word:'parola', characters:'caratteri', character:'carattere',
+      voice_message:'Messaggio vocale', play:'▶ Ascolta', pause_play:'⏸ Pausa',
+      send_modal_title:'Invia a Paul', send_modal_sub:'Il tuo messaggio è pronto.',
+      stat_time:'Tempo attivo', stat_words:'Parole', stat_chars:'Caratteri',
+      your_name:'Il tuo nome', name_placeholder:'Mario Rossi',
+      how_reach:'Come Paul può contattarti', contact_placeholder:'Email, Telegram, telefono…',
+      send_via:'Invia tramite',
+      send_email_btn:'Invia e-mail a Paul', open_email_client:'Apri client e-mail', fallback:'Alternativo',
+      modal_foot_note:'Email inviata tramite Resend direttamente a Paul.',
+      sending:'Caricamento file e invio messaggio…',
+      sent_title:'Messaggio inviato!',
+      sent_sub:'Paul riceverà il tuo messaggio nella sua casella. Li legge tutti personalmente.',
+      write_another:'← Scrivi un altro', go_to_paul:'Vai su paulfleury.com',
+      error_title:'Qualcosa è andato storto', back:'← Indietro', try_again:'Riprova',
+      voice_modal_title:'Messaggio vocale', click_to_record:'Clicca per registrare',
+      mic_error:'È necessario l\'accesso al microfono.',
+      click_to_stop:'Clicca per fermare',
+      lang_title:'Lingua', lang_sub:'Scegli la tua lingua preferita',
+      theme_title:'Aspetto', theme_sub:'Scegli il tema preferito',
+      theme_light:'Chiaro', theme_light_desc:'Interfaccia bianca e pulita',
+      theme_dark:'Scuro', theme_dark_desc:'Riposante per gli occhi di notte',
+      theme_system:'Sistema', theme_system_desc:'Segue le impostazioni del sistema',
+      settings_title:'Impostazioni', settings_sub:'Configura la chiave API Resend.',
+      pin_info:'Una chiave API è configurata. Inserisci il PIN.',
+      pin_label:'PIN', pin_placeholder:'Inserisci PIN', pin_hint:'PIN predefinito: 1234',
+      pin_error:'PIN non corretto.',
+      setup_info:'Nessuna chiave API. Aggiungi la chiave Resend.',
+      api_key_label:'Chiave API Resend', api_key_hint:'Ottienila su resend.com',
+      set_pin_label:'Imposta PIN', set_pin_placeholder:'Scegli un PIN (min 4 caratteri)',
+      set_pin_hint:'Necessario per modificare le impostazioni.',
+      manage_key_hint:'Lascia vuoto per mantenere la chiave attuale.',
+      tab_api_key:'Chiave API', tab_change_pin:'Cambia PIN',
+      new_pin_label:'Nuovo PIN', new_pin_placeholder:'Nuovo PIN (min 4 caratteri)',
+      cancel:'Annulla', unlock:'Sblocca →', save_enable:'Salva e Abilita',
+      close:'Chiudi', save_key:'Salva chiave', update_pin:'Aggiorna PIN',
+      toast_attached_1:'1 file allegato.', toast_attached_n:'%n file allegati.',
+      toast_voice_attached:'Messaggio vocale allegato.', toast_settings_saved:'Impostazioni salvate.',
+      toast_api_updated:'Chiave API aggiornata.', toast_pin_updated:'PIN aggiornato.',
+      toast_copied:'Copiato.', toast_write_first:'Scrivi prima qualcosa!',
+    },
+    es: {
+      topbar_title:'✉️ Enviar un mensaje a Paul Fleury',
+      state_idle:'Inactivo', state_running:'En curso', state_paused:'Pausado',
+      page_title:'Mensaje a Paul Fleury',
+      page_sub:'Paul lee cada mensaje personalmente. Pulsa <strong>Iniciar</strong> para escribir.',
+      active_writing_time:'tiempo de escritura activo',
+      controls:'Controles', start:'Iniciar', pause:'Pausar', reset:'Reiniciar',
+      attachments:'Adjuntos', attach_file:'Adjuntar archivo', or_drag:'o arrastrar',
+      record_voice:'Grabar voz', send_label:'Enviar', send_to_paul:'Enviar a Paul',
+      sidebar_footer:'El temporizador solo funciona mientras Iniciar está activo.',
+      welcome_eyebrow:'Mensaje a Paul Fleury',
+      welcome_title:'Di algo que valga la pena escribir.',
+      welcome_desc1:'Este es un lienzo de escritura cronometrado. El reloj solo avanza mientras escribes.',
+      welcome_desc2:'Cuando termines, tu mensaje se envía directamente a Paul por correo.',
+      step1:'Pulsa Iniciar — el temporizador comienza.',
+      step2:'Escribe libremente. Adjunta archivos o una nota de voz.',
+      step3:'Envía el mensaje a Paul cuando estés listo.',
+      start_writing:'Comenzar a escribir',
+      welcome_hint:'El temporizador comienza de inmediato. Puedes pausar con Esc',
+      textarea_placeholder:'Escribe tu mensaje…',
+      textarea_disabled:'Pulsa Iniciar para comenzar a escribir…',
+      words:'palabras', word:'palabra', characters:'caracteres', character:'carácter',
+      voice_message:'Mensaje de voz', play:'▶ Escuchar', pause_play:'⏸ Pausa',
+      send_modal_title:'Enviar a Paul', send_modal_sub:'Tu mensaje está listo.',
+      stat_time:'Tiempo activo', stat_words:'Palabras', stat_chars:'Caracteres',
+      your_name:'Tu nombre', name_placeholder:'Juan García',
+      how_reach:'Cómo puede contactarte Paul', contact_placeholder:'Correo, Telegram, teléfono…',
+      send_via:'Enviar por',
+      send_email_btn:'Enviar correo a Paul', open_email_client:'Abrir cliente de correo', fallback:'Alternativo',
+      modal_foot_note:'Correo enviado a Paul mediante Resend.',
+      sending:'Subiendo archivos y enviando mensaje…',
+      sent_title:'¡Mensaje enviado!',
+      sent_sub:'Paul recibirá tu mensaje en su bandeja de entrada. Los lee todos personalmente.',
+      write_another:'← Escribir otro', go_to_paul:'Ir a paulfleury.com',
+      error_title:'Algo salió mal', back:'← Atrás', try_again:'Intentar de nuevo',
+      voice_modal_title:'Mensaje de voz', click_to_record:'Clic para grabar',
+      mic_error:'Se requiere acceso al micrófono.',
+      click_to_stop:'Clic para detener',
+      lang_title:'Idioma', lang_sub:'Elige tu idioma preferido',
+      theme_title:'Apariencia', theme_sub:'Elige tu tema preferido',
+      theme_light:'Claro', theme_light_desc:'Interfaz blanca y limpia',
+      theme_dark:'Oscuro', theme_dark_desc:'Descansa la vista de noche',
+      theme_system:'Sistema', theme_system_desc:'Sigue la configuración del SO',
+      settings_title:'Configuración', settings_sub:'Configura la clave API de Resend.',
+      pin_info:'Hay una clave API configurada. Introduce tu PIN.',
+      pin_label:'PIN', pin_placeholder:'Introduce el PIN', pin_hint:'El PIN predeterminado es 1234',
+      pin_error:'PIN incorrecto.',
+      setup_info:'Sin clave API. Añade tu clave de Resend.',
+      api_key_label:'Clave API de Resend', api_key_hint:'Consíguela en resend.com',
+      set_pin_label:'Establecer PIN', set_pin_placeholder:'Elige un PIN (mín. 4 caracteres)',
+      set_pin_hint:'Lo necesitarás para actualizar la configuración.',
+      manage_key_hint:'Deja en blanco para mantener la clave actual.',
+      tab_api_key:'Clave API', tab_change_pin:'Cambiar PIN',
+      new_pin_label:'Nuevo PIN', new_pin_placeholder:'Nuevo PIN (mín. 4 caracteres)',
+      cancel:'Cancelar', unlock:'Desbloquear →', save_enable:'Guardar y activar',
+      close:'Cerrar', save_key:'Guardar clave', update_pin:'Actualizar PIN',
+      toast_attached_1:'1 archivo adjunto.', toast_attached_n:'%n archivos adjuntos.',
+      toast_voice_attached:'Mensaje de voz adjunto.', toast_settings_saved:'Configuración guardada.',
+      toast_api_updated:'Clave API actualizada.', toast_pin_updated:'PIN actualizado.',
+      toast_copied:'Copiado.', toast_write_first:'¡Escribe algo primero!',
+    },
+    nl: {
+      topbar_title:'✉️ Stuur een bericht aan Paul Fleury',
+      state_idle:'Inactief', state_running:'Actief', state_paused:'Gepauzeerd',
+      page_title:'Bericht aan Paul Fleury',
+      page_sub:'Paul leest elk bericht persoonlijk. Klik op <strong>Starten</strong> om te beginnen.',
+      active_writing_time:'actieve schrijftijd',
+      controls:'Bediening', start:'Starten', pause:'Pauzeren', reset:'Resetten',
+      attachments:'Bijlagen', attach_file:'Bestand bijvoegen', or_drag:'of slepen',
+      record_voice:'Stem opnemen', send_label:'Verzenden', send_to_paul:'Stuur naar Paul',
+      sidebar_footer:'Timer loopt alleen terwijl Starten actief is.',
+      welcome_eyebrow:'Bericht aan Paul Fleury',
+      welcome_title:'Zeg iets dat het waard is om te schrijven.',
+      welcome_desc1:'Dit is een getimede schrijfruimte. De klok loopt alleen terwijl je typt.',
+      welcome_desc2:'Als je klaar bent, wordt je bericht direct per e-mail naar Paul gestuurd.',
+      step1:'Klik op Starten — de timer begint.',
+      step2:'Schrijf vrij. Voeg bestanden of een spraakbericht toe.',
+      step3:'Stuur het bericht naar Paul als je klaar bent.',
+      start_writing:'Begin met schrijven',
+      welcome_hint:'Timer start meteen. Je kunt pauzeren met Esc',
+      textarea_placeholder:'Schrijf je bericht…',
+      textarea_disabled:'Klik op Starten om te beginnen…',
+      words:'woorden', word:'woord', characters:'tekens', character:'teken',
+      voice_message:'Spraakbericht', play:'▶ Afspelen', pause_play:'⏸ Pauzeren',
+      send_modal_title:'Stuur naar Paul', send_modal_sub:'Je bericht is klaar.',
+      stat_time:'Actieve tijd', stat_words:'Woorden', stat_chars:'Tekens',
+      your_name:'Je naam', name_placeholder:'Jan de Vries',
+      how_reach:'Hoe Paul je kan bereiken', contact_placeholder:'E-mail, Telegram, telefoon…',
+      send_via:'Verzenden via',
+      send_email_btn:'E-mail sturen naar Paul', open_email_client:'E-mailprogramma openen', fallback:'Alternatief',
+      modal_foot_note:'E-mail verzonden via Resend rechtstreeks naar Paul.',
+      sending:'Bestanden uploaden en bericht verzenden…',
+      sent_title:'Bericht verzonden!',
+      sent_sub:'Paul ontvangt je bericht in zijn inbox. Hij leest ze allemaal persoonlijk.',
+      write_another:'← Ander bericht schrijven', go_to_paul:'Ga naar paulfleury.com',
+      error_title:'Er ging iets mis', back:'← Terug', try_again:'Opnieuw proberen',
+      voice_modal_title:'Spraakbericht', click_to_record:'Klik om op te nemen',
+      mic_error:'Microfoontoegang vereist.',
+      click_to_stop:'Klik om te stoppen',
+      lang_title:'Taal', lang_sub:'Kies je voorkeurstaal',
+      theme_title:'Weergave', theme_sub:'Kies je voorkeurthema',
+      theme_light:'Licht', theme_light_desc:'Schoon wit interface',
+      theme_dark:'Donker', theme_dark_desc:'Rustgevend bij nacht',
+      theme_system:'Systeem', theme_system_desc:'Volgt je OS-instelling',
+      settings_title:'Instellingen', settings_sub:'Configureer de Resend API-sleutel.',
+      pin_info:'Een API-sleutel is geconfigureerd. Voer je PIN in.',
+      pin_label:'PIN', pin_placeholder:'Voer PIN in', pin_hint:'Standaard PIN is 1234',
+      pin_error:'Onjuiste PIN.',
+      setup_info:'Geen API-sleutel. Voeg je Resend-sleutel toe.',
+      api_key_label:'Resend API-sleutel', api_key_hint:'Verkrijg hem op resend.com',
+      set_pin_label:'PIN instellen', set_pin_placeholder:'Kies een PIN (min. 4 tekens)',
+      set_pin_hint:'Dit heb je nodig om instellingen later te wijzigen.',
+      manage_key_hint:'Leeg laten om de huidige sleutel te behouden.',
+      tab_api_key:'API-sleutel', tab_change_pin:'PIN wijzigen',
+      new_pin_label:'Nieuwe PIN', new_pin_placeholder:'Nieuwe PIN (min. 4 tekens)',
+      cancel:'Annuleren', unlock:'Ontgrendelen →', save_enable:'Opslaan & Activeren',
+      close:'Sluiten', save_key:'Sleutel opslaan', update_pin:'PIN bijwerken',
+      toast_attached_1:'1 bestand bijgevoegd.', toast_attached_n:'%n bestanden bijgevoegd.',
+      toast_voice_attached:'Spraakbericht bijgevoegd.', toast_settings_saved:'Instellingen opgeslagen.',
+      toast_api_updated:'API-sleutel bijgewerkt.', toast_pin_updated:'PIN bijgewerkt.',
+      toast_copied:'Gekopieerd.', toast_write_first:'Schrijf eerst iets!',
+    },
+    zh: {
+      topbar_title:'✉️ 向 Paul Fleury 发送消息',
+      state_idle:'待机', state_running:'进行中', state_paused:'已暂停',
+      page_title:'致 Paul Fleury 的消息',
+      page_sub:'Paul 会亲自阅读每一条消息。准备好后点击<strong>开始</strong>。',
+      active_writing_time:'活跃写作时间',
+      controls:'控制', start:'开始', pause:'暂停', reset:'重置',
+      attachments:'附件', attach_file:'附加文件', or_drag:'或拖拽',
+      record_voice:'录制语音', send_label:'发送', send_to_paul:'发送给 Paul',
+      sidebar_footer:'计时器仅在开始状态下运行。文件已安全上传。',
+      welcome_eyebrow:'致 Paul Fleury 的消息',
+      welcome_title:'写一些值得写的话。',
+      welcome_desc1:'这是一个计时写作画布。计时器仅在您输入时运行——每一秒都是真正的写作时间。',
+      welcome_desc2:'完成后，您的消息将通过电子邮件直接发送给 Paul，附带语音消息或文件。',
+      step1:'点击开始 — 计时器启动。', step2:'自由书写，附加文件或语音。', step3:'准备好后发送消息。',
+      start_writing:'开始写作', welcome_hint:'计时器立即开始。随时按 Esc 暂停',
+      textarea_placeholder:'写下您的消息…', textarea_disabled:'点击开始以开始写作…',
+      words:'字', word:'字', characters:'字符', character:'字符',
+      voice_message:'语音消息', play:'▶ 播放', pause_play:'⏸ 暂停',
+      send_modal_title:'发送给 Paul', send_modal_sub:'您的消息已准备好发送。',
+      stat_time:'活跃时间', stat_words:'字数', stat_chars:'字符数',
+      your_name:'您的姓名', name_placeholder:'张三',
+      how_reach:'Paul 如何联系您', contact_placeholder:'邮箱、Telegram、电话…',
+      send_via:'发送方式',
+      send_email_btn:'发送邮件给 Paul', open_email_client:'打开邮件客户端', fallback:'备用',
+      modal_foot_note:'通过 Resend 直接向 Paul 发送邮件。',
+      sending:'正在上传文件并发送消息…',
+      sent_title:'消息已发送！', sent_sub:'Paul 将在收件箱中收到您的消息。他会亲自阅读每一条。',
+      write_another:'← 再写一条', go_to_paul:'前往 paulfleury.com',
+      error_title:'出现问题', back:'← 返回', try_again:'重试',
+      voice_modal_title:'语音消息', click_to_record:'点击开始录制',
+      mic_error:'需要麦克风访问权限。', click_to_stop:'点击停止',
+      lang_title:'语言', lang_sub:'选择您偏好的语言',
+      theme_title:'外观', theme_sub:'选择您偏好的主题',
+      theme_light:'浅色', theme_light_desc:'干净的白色界面',
+      theme_dark:'深色', theme_dark_desc:'夜间护眼',
+      theme_system:'系统', theme_system_desc:'跟随系统设置',
+      settings_title:'设置', settings_sub:'配置用于发送消息的 Resend API 密钥。',
+      pin_info:'已配置 API 密钥。输入 PIN 以访问设置。',
+      pin_label:'PIN', pin_placeholder:'输入 PIN', pin_hint:'默认 PIN 为 1234',
+      pin_error:'PIN 不正确。',
+      setup_info:'尚未配置 API 密钥。添加您的 Resend 密钥。',
+      api_key_label:'Resend API 密钥', api_key_hint:'在 resend.com 获取',
+      set_pin_label:'设置 PIN', set_pin_placeholder:'选择 PIN（至少 4 个字符）',
+      set_pin_hint:'以后修改设置时需要此 PIN。',
+      manage_key_hint:'留空以保留当前密钥。',
+      tab_api_key:'API 密钥', tab_change_pin:'更改 PIN',
+      new_pin_label:'新 PIN', new_pin_placeholder:'新 PIN（至少 4 个字符）',
+      cancel:'取消', unlock:'解锁 →', save_enable:'保存并启用',
+      close:'关闭', save_key:'保存密钥', update_pin:'更新 PIN',
+      toast_attached_1:'已附加 1 个文件。', toast_attached_n:'已附加 %n 个文件。',
+      toast_voice_attached:'语音消息已附加。', toast_settings_saved:'设置已保存。',
+      toast_api_updated:'API 密钥已更新。', toast_pin_updated:'PIN 已更新。',
+      toast_copied:'已复制。', toast_write_first:'请先写些内容！',
+    },
+    hi: {
+      topbar_title:'✉️ Paul Fleury को संदेश भेजें',
+      state_idle:'निष्क्रिय', state_running:'चल रहा है', state_paused:'रुका हुआ',
+      page_title:'Paul Fleury को संदेश',
+      page_sub:'Paul हर संदेश व्यक्तिगत रूप से पढ़ते हैं। लिखने के लिए <strong>प्रारंभ</strong> करें।',
+      active_writing_time:'सक्रिय लेखन समय',
+      controls:'नियंत्रण', start:'प्रारंभ', pause:'रोकें', reset:'रीसेट',
+      attachments:'अनुलग्नक', attach_file:'फ़ाइल संलग्न करें', or_drag:'या खींचें',
+      record_voice:'आवाज़ रिकॉर्ड करें', send_label:'भेजें', send_to_paul:'Paul को भेजें',
+      sidebar_footer:'टाइमर केवल प्रारंभ सक्रिय होने पर चलता है।',
+      welcome_eyebrow:'Paul Fleury को संदेश',
+      welcome_title:'कुछ ऐसा लिखें जो लिखने योग्य हो।',
+      welcome_desc1:'यह एक समयबद्ध लेखन कैनवास है। घड़ी केवल टाइप करते समय चलती है।',
+      welcome_desc2:'जब आप पूरा कर लें, तो आपका संदेश सीधे Paul को ईमेल द्वारा भेजा जाता है।',
+      step1:'प्रारंभ दबाएं — टाइमर शुरू होता है।', step2:'स्वतंत्र रूप से लिखें।', step3:'तैयार होने पर भेजें।',
+      start_writing:'लिखना शुरू करें', welcome_hint:'टाइमर तुरंत शुरू होता है। Esc से रोकें',
+      textarea_placeholder:'अपना संदेश लिखें…', textarea_disabled:'लिखना शुरू करने के लिए प्रारंभ दबाएं…',
+      words:'शब्द', word:'शब्द', characters:'अक्षर', character:'अक्षर',
+      voice_message:'वॉइस संदेश', play:'▶ सुनें', pause_play:'⏸ रोकें',
+      send_modal_title:'Paul को भेजें', send_modal_sub:'आपका संदेश भेजने के लिए तैयार है।',
+      stat_time:'सक्रिय समय', stat_words:'शब्द', stat_chars:'अक्षर',
+      your_name:'आपका नाम', name_placeholder:'अमित शर्मा',
+      how_reach:'Paul आपसे कैसे संपर्क करें', contact_placeholder:'ईमेल, Telegram, फोन…',
+      send_via:'के द्वारा भेजें',
+      send_email_btn:'Paul को ईमेल भेजें', open_email_client:'ईमेल क्लाइंट खोलें', fallback:'वैकल्पिक',
+      modal_foot_note:'Resend के ज़रिए सीधे Paul को ईमेल भेजा गया।',
+      sending:'फ़ाइलें अपलोड और संदेश भेजा जा रहा है…',
+      sent_title:'संदेश भेजा गया!', sent_sub:'Paul को आपका संदेश उनके इनबॉक्स में मिलेगा।',
+      write_another:'← दूसरा लिखें', go_to_paul:'paulfleury.com पर जाएं',
+      error_title:'कुछ गलत हुआ', back:'← वापस', try_again:'फिर प्रयास करें',
+      voice_modal_title:'वॉइस संदेश', click_to_record:'रिकॉर्ड करने के लिए क्लिक करें',
+      mic_error:'माइक्रोफ़ोन एक्सेस आवश्यक है।', click_to_stop:'रोकने के लिए क्लिक करें',
+      lang_title:'भाषा', lang_sub:'अपनी पसंदीदा भाषा चुनें',
+      theme_title:'रूप', theme_sub:'अपना पसंदीदा थीम चुनें',
+      theme_light:'हल्का', theme_light_desc:'साफ सफेद इंटरफ़ेस',
+      theme_dark:'गहरा', theme_dark_desc:'रात में आंखों के लिए आरामदायक',
+      theme_system:'सिस्टम', theme_system_desc:'OS सेटिंग का अनुसरण करता है',
+      settings_title:'सेटिंग्स', settings_sub:'Resend API कुंजी कॉन्फ़िगर करें।',
+      pin_info:'API कुंजी कॉन्फ़िगर है। सेटिंग्स तक पहुंचने के लिए PIN दर्ज करें।',
+      pin_label:'PIN', pin_placeholder:'PIN दर्ज करें', pin_hint:'डिफ़ॉल्ट PIN 1234 है',
+      pin_error:'गलत PIN।',
+      setup_info:'कोई API कुंजी नहीं। अपनी Resend कुंजी जोड़ें।',
+      api_key_label:'Resend API कुंजी', api_key_hint:'resend.com पर प्राप्त करें',
+      set_pin_label:'PIN सेट करें', set_pin_placeholder:'PIN चुनें (न्यूनतम 4 अक्षर)',
+      set_pin_hint:'बाद में सेटिंग्स अपडेट करने के लिए आवश्यक।',
+      manage_key_hint:'वर्तमान कुंजी रखने के लिए खाली छोड़ें।',
+      tab_api_key:'API कुंजी', tab_change_pin:'PIN बदलें',
+      new_pin_label:'नया PIN', new_pin_placeholder:'नया PIN (न्यूनतम 4 अक्षर)',
+      cancel:'रद्द करें', unlock:'अनलॉक करें →', save_enable:'सेव और सक्षम करें',
+      close:'बंद करें', save_key:'कुंजी सेव करें', update_pin:'PIN अपडेट करें',
+      toast_attached_1:'1 फ़ाइल संलग्न।', toast_attached_n:'%n फ़ाइलें संलग्न।',
+      toast_voice_attached:'वॉइस संदेश संलग्न।', toast_settings_saved:'सेटिंग्स सहेजी गईं।',
+      toast_api_updated:'API कुंजी अपडेट।', toast_pin_updated:'PIN अपडेट।',
+      toast_copied:'कॉपी किया।', toast_write_first:'पहले कुछ लिखें!',
+    },
+    ja: {
+      topbar_title:'✉️ Paul Fleuryへメッセージを送る',
+      state_idle:'待機中', state_running:'実行中', state_paused:'一時停止',
+      page_title:'Paul Fleuryへのメッセージ',
+      page_sub:'Paulはすべてのメッセージを個人的に読みます。<strong>開始</strong>をクリックして書き始めてください。',
+      active_writing_time:'アクティブな執筆時間',
+      controls:'コントロール', start:'開始', pause:'一時停止', reset:'リセット',
+      attachments:'添付ファイル', attach_file:'ファイルを添付', or_drag:'またはドラッグ',
+      record_voice:'音声を録音', send_label:'送信', send_to_paul:'Paulに送信',
+      sidebar_footer:'タイマーは開始中のみ動作します。ファイルは安全に転送されます。',
+      welcome_eyebrow:'Paul Fleuryへのメッセージ',
+      welcome_title:'書く価値のあることを伝えよう。',
+      welcome_desc1:'タイマー付きの作文キャンバスです。タイピング中のみ時計が進みます。',
+      welcome_desc2:'完了すると、メッセージは音声や添付ファイルとともにPaulにメールで直接送られます。',
+      step1:'開始をクリック — タイマーが始まります。', step2:'自由に書いてください。', step3:'準備ができたら送信。',
+      start_writing:'書き始める', welcome_hint:'タイマーはすぐに開始します。Escで一時停止できます',
+      textarea_placeholder:'メッセージを書いてください…', textarea_disabled:'開始をクリックして書き始めてください…',
+      words:'語', word:'語', characters:'文字', character:'文字',
+      voice_message:'音声メッセージ', play:'▶ 再生', pause_play:'⏸ 一時停止',
+      send_modal_title:'Paulに送信', send_modal_sub:'メッセージの送信準備ができました。',
+      stat_time:'アクティブ時間', stat_words:'単語数', stat_chars:'文字数',
+      your_name:'お名前', name_placeholder:'山田 太郎',
+      how_reach:'Paulからの連絡方法', contact_placeholder:'メール、Telegram、電話…',
+      send_via:'送信方法',
+      send_email_btn:'Paulにメールを送る', open_email_client:'メールクライアントを開く', fallback:'代替手段',
+      modal_foot_note:'Resend経由でPaulに直接メールが送信されます。',
+      sending:'ファイルをアップロードしてメッセージを送信中…',
+      sent_title:'メッセージを送信しました！', sent_sub:'Paulは受信トレイでメッセージを受け取ります。',
+      write_another:'← 別のメッセージを書く', go_to_paul:'paulfleury.comへ',
+      error_title:'エラーが発生しました', back:'← 戻る', try_again:'再試行',
+      voice_modal_title:'音声メッセージ', click_to_record:'クリックして録音開始',
+      mic_error:'マイクへのアクセスが必要です。', click_to_stop:'クリックして停止',
+      lang_title:'言語', lang_sub:'使用言語を選択してください',
+      theme_title:'外観', theme_sub:'テーマを選択してください',
+      theme_light:'ライト', theme_light_desc:'清潔な白いインターフェース',
+      theme_dark:'ダーク', theme_dark_desc:'夜間に目に優しい',
+      theme_system:'システム', theme_system_desc:'OSの設定に従う',
+      settings_title:'設定', settings_sub:'メッセージ配信に使用するResend APIキーを設定します。',
+      pin_info:'APIキーが設定されています。PINを入力してください。',
+      pin_label:'PIN', pin_placeholder:'PINを入力', pin_hint:'デフォルトPINは1234',
+      pin_error:'PINが正しくありません。',
+      setup_info:'APIキーが未設定です。ResendキーをAPIキーを追加してください。',
+      api_key_label:'Resend APIキー', api_key_hint:'resend.comで取得',
+      set_pin_label:'PINを設定', set_pin_placeholder:'PINを選択（最低4文字）',
+      set_pin_hint:'後で設定を変更するために必要です。',
+      manage_key_hint:'現在のキーを保持するには空のままにします。',
+      tab_api_key:'APIキー', tab_change_pin:'PIN変更',
+      new_pin_label:'新しいPIN', new_pin_placeholder:'新しいPIN（最低4文字）',
+      cancel:'キャンセル', unlock:'ロック解除 →', save_enable:'保存して有効化',
+      close:'閉じる', save_key:'キーを保存', update_pin:'PINを更新',
+      toast_attached_1:'ファイルを1件添付しました。', toast_attached_n:'%n件のファイルを添付しました。',
+      toast_voice_attached:'音声メッセージを添付しました。', toast_settings_saved:'設定を保存しました。',
+      toast_api_updated:'APIキーを更新しました。', toast_pin_updated:'PINを更新しました。',
+      toast_copied:'コピーしました。', toast_write_first:'まず何か書いてください！',
+    },
+    ru: {
+      topbar_title:'✉️ Отправить сообщение Полю Флёри',
+      state_idle:'Ожидание', state_running:'Идёт', state_paused:'Пауза',
+      page_title:'Сообщение Полю Флёри',
+      page_sub:'Поль лично читает каждое сообщение. Нажмите <strong>Начать</strong>, чтобы приступить.',
+      active_writing_time:'активное время написания',
+      controls:'Управление', start:'Начать', pause:'Пауза', reset:'Сбросить',
+      attachments:'Вложения', attach_file:'Прикрепить файл', or_drag:'или перетащить',
+      record_voice:'Записать голос', send_label:'Отправить', send_to_paul:'Отправить Полю',
+      sidebar_footer:'Таймер работает только пока активен режим "Начать".',
+      welcome_eyebrow:'Сообщение Полю Флёри',
+      welcome_title:'Скажите что-то, что стоит написать.',
+      welcome_desc1:'Это текстовый холст с таймером. Часы идут только пока вы печатаете.',
+      welcome_desc2:'Когда закончите, сообщение будет отправлено Полю по электронной почте.',
+      step1:'Нажмите Начать — таймер запустится.', step2:'Пишите свободно.', step3:'Отправьте сообщение, когда будете готовы.',
+      start_writing:'Начать писать', welcome_hint:'Таймер запускается сразу. Пауза — клавиша Esc',
+      textarea_placeholder:'Напишите ваше сообщение…', textarea_disabled:'Нажмите Начать, чтобы приступить…',
+      words:'слов', word:'слово', characters:'символов', character:'символ',
+      voice_message:'Голосовое сообщение', play:'▶ Воспроизвести', pause_play:'⏸ Пауза',
+      send_modal_title:'Отправить Полю', send_modal_sub:'Ваше сообщение готово.',
+      stat_time:'Активное время', stat_words:'Слова', stat_chars:'Символы',
+      your_name:'Ваше имя', name_placeholder:'Иван Иванов',
+      how_reach:'Как Поль может связаться с вами', contact_placeholder:'Email, Telegram, телефон…',
+      send_via:'Отправить через',
+      send_email_btn:'Отправить письмо Полю', open_email_client:'Открыть почтовый клиент', fallback:'Запасной вариант',
+      modal_foot_note:'Письмо отправлено Полю через Resend.',
+      sending:'Загрузка файлов и отправка сообщения…',
+      sent_title:'Сообщение отправлено!', sent_sub:'Поль получит ваше сообщение в папку входящих.',
+      write_another:'← Написать ещё', go_to_paul:'Перейти на paulfleury.com',
+      error_title:'Что-то пошло не так', back:'← Назад', try_again:'Попробовать снова',
+      voice_modal_title:'Голосовое сообщение', click_to_record:'Нажмите для записи',
+      mic_error:'Требуется доступ к микрофону.', click_to_stop:'Нажмите для остановки',
+      lang_title:'Язык', lang_sub:'Выберите предпочтительный язык',
+      theme_title:'Внешний вид', theme_sub:'Выберите тему оформления',
+      theme_light:'Светлая', theme_light_desc:'Чистый белый интерфейс',
+      theme_dark:'Тёмная', theme_dark_desc:'Бережно для глаз ночью',
+      theme_system:'Системная', theme_system_desc:'Следует настройкам ОС',
+      settings_title:'Настройки', settings_sub:'Настройте API-ключ Resend для доставки сообщений.',
+      pin_info:'API-ключ настроен. Введите PIN для доступа.',
+      pin_label:'PIN', pin_placeholder:'Введите PIN', pin_hint:'PIN по умолчанию: 1234',
+      pin_error:'Неверный PIN.',
+      setup_info:'API-ключ не настроен. Добавьте ключ Resend.',
+      api_key_label:'API-ключ Resend', api_key_hint:'Получите на resend.com',
+      set_pin_label:'Установить PIN', set_pin_placeholder:'Выберите PIN (мин. 4 символа)',
+      set_pin_hint:'Потребуется для изменения настроек.',
+      manage_key_hint:'Оставьте пустым, чтобы сохранить текущий ключ.',
+      tab_api_key:'API-ключ', tab_change_pin:'Изменить PIN',
+      new_pin_label:'Новый PIN', new_pin_placeholder:'Новый PIN (мин. 4 символа)',
+      cancel:'Отмена', unlock:'Разблокировать →', save_enable:'Сохранить и включить',
+      close:'Закрыть', save_key:'Сохранить ключ', update_pin:'Обновить PIN',
+      toast_attached_1:'1 файл прикреплён.', toast_attached_n:'%n файлов прикреплено.',
+      toast_voice_attached:'Голосовое сообщение прикреплено.', toast_settings_saved:'Настройки сохранены.',
+      toast_api_updated:'API-ключ обновлён.', toast_pin_updated:'PIN обновлён.',
+      toast_copied:'Скопировано.', toast_write_first:'Сначала напишите что-нибудь!',
+    },
+  };
+
+  /* ════════════════════════════════════════════════════════════════════════
+   * I18N ENGINE
+   * ════════════════════════════════════════════════════════════════════════ */
+  let currentLang = localStorage.getItem('to_lang') || 'en';
+
+  const t = (key, vars) => {
+    const str = (T[currentLang]?.[key] || T.en[key] || key);
+    if (vars) return str.replace(/%(\w+)/g, (_, k) => vars[k] ?? _);
+    return str;
+  };
+
+  const applyTranslations = () => {
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      const val = t(key);
+      // For elements that may contain HTML tags (like <strong>)
+      if (val.includes('<')) { el.innerHTML = val; }
+      else { el.textContent = val; }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
+    // Dynamic elements
+    document.title = t('topbar_title').replace(/^.+? /, ''); // strip emoji for tab
+    document.title = 'Send a message to Paul Fleury'; // keep stable tab title
+    // Textarea placeholder depends on state
+    if (!running) {
+      textEl.placeholder = t('textarea_disabled');
+    } else {
+      textEl.placeholder = t('textarea_placeholder');
+    }
+    // State label
+    const stateMap = { idle:'state_idle', running:'state_running', paused:'state_paused', ready:'state_running' };
+    document.getElementById('state-label').textContent = t(stateMap[state] || 'state_idle');
+    document.getElementById('timer-state-lbl').textContent = t(stateMap[state] || 'state_idle').toUpperCase();
+    // Start button label
+    document.getElementById('start-lbl').textContent = activeMs > 0 ? t('start') : t('start');
+    // Word count
+    updateCounts();
+    // Flag button
+    document.getElementById('lang-flag').textContent = LANGS[currentLang]?.flag || '🌐';
+    // Mobile buttons
+    document.getElementById('mb-toggle').textContent = running ? t('pause') : t('start');
+  };
+
+  /* ════════════════════════════════════════════════════════════════════════
+   * THEME ENGINE
+   * ════════════════════════════════════════════════════════════════════════ */
+  let currentThemePref = localStorage.getItem('to_theme') || 'system';
+
+  const getEffectiveTheme = () => {
+    if (currentThemePref === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return currentThemePref;
+  };
+
+  const applyTheme = () => {
+    document.documentElement.setAttribute('data-theme', getEffectiveTheme());
+    // Update active state in theme modal
+    document.querySelectorAll('.theme-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.themeVal === currentThemePref);
+    });
+  };
+
+  // Listen for OS theme changes when in system mode
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (currentThemePref === 'system') applyTheme();
+  });
+
+  /* ════════════════════════════════════════════════════════════════════════
+   * PLATFORM DETECTION
+   * ════════════════════════════════════════════════════════════════════════ */
   const isMac = /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent);
   const cmdKey = isMac ? '⌘' : 'Ctrl';
 
-  /* ── Helpers ─────────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * HELPERS
+   * ════════════════════════════════════════════════════════════════════════ */
   const fmtTime = (ms) => {
     ms = Math.max(0, Math.floor(ms));
-    const m = Math.floor(ms / 60000);
-    const s = Math.floor((ms % 60000) / 1000);
-    const x = ms % 1000;
+    const m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000), x = ms % 1000;
     return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(x).padStart(3,'0')}`;
   };
-
-  const fmtDur = (ms) => {
-    const s = Math.floor(ms / 1000);
-    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-  };
-
-  const fmtSize = (b) => {
-    if (b < 1024) return b + ' B';
-    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-    return (b/1048576).toFixed(1) + ' MB';
-  };
-
-  const typeLabel = (mime) => {
-    if (!mime) return 'FILE';
-    if (mime.startsWith('image/')) return mime.replace('image/','').toUpperCase().slice(0,4);
-    if (mime.startsWith('audio/')) return 'AUDIO';
-    if (mime.startsWith('video/')) return 'VIDEO';
-    if (mime.includes('pdf')) return 'PDF';
-    const p = mime.split('/');
-    return (p[1]||p[0]).toUpperCase().slice(0,6);
-  };
-
-  const typeIcon = (mime) => {
-    if (!mime) return '📄';
-    if (mime.startsWith('image/')) return '🖼';
-    if (mime.startsWith('audio/')) return '🎵';
-    if (mime.startsWith('video/')) return '🎬';
-    if (mime.includes('pdf')) return '📋';
-    return '📄';
-  };
+  const fmtDur = (ms) => { const s = Math.floor(ms/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; };
+  const fmtSize = (b) => b < 1024 ? b+' B' : b < 1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(1)+' MB';
+  const typeIcon = (m) => !m ? '📄' : m.startsWith('image/') ? '🖼' : m.startsWith('audio/') ? '🎵' : m.startsWith('video/') ? '🎬' : m.includes('pdf') ? '📋' : '📄';
+  const typeLabel = (m) => { if (!m) return 'FILE'; if (m.startsWith('image/')) return m.replace('image/','').toUpperCase().slice(0,4); if (m.startsWith('audio/')) return 'AUDIO'; if (m.startsWith('video/')) return 'VIDEO'; if (m.includes('pdf')) return 'PDF'; return (m.split('/')[1]||m.split('/')[0]).toUpperCase().slice(0,6); };
 
   let toastTimer = null;
-  const toast = (msg, dur = 2000) => {
+  const toast = (msg, dur = 2500) => {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
+    el.textContent = msg; el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), dur);
   };
 
-  /* ── State ───────────────────────────────────────────────────────────── */
-  let state      = 'idle';
-  let running    = false;
-  let activeMs   = 0;
-  let t0         = null;
-  let raf        = null;
-  let audioRec   = null;   // { blob, url, durationMs }
-  let abAudio    = null;
-  let files      = [];
-  let fileIdCtr  = 0;
-  let uploadedFiles   = [];  // [{ name, url, size, mime }] — server-uploaded
-  let uploadedAudio   = null; // { name, url }
-  let settingsPinCache = null; // PIN cached after unlock
-
-  /* Voice recorder */
+  /* ════════════════════════════════════════════════════════════════════════
+   * STATE
+   * ════════════════════════════════════════════════════════════════════════ */
+  let state = 'idle', running = false, activeMs = 0, t0 = null, raf = null;
+  let audioRec = null, abAudio = null;
+  let files = [], fileIdCtr = 0;
+  let settingsPinCache = null;
   let vrState = 'idle', vrElapsed = 0, vrStream = null, vrAudioCtx = null;
   let vrAnalyser = null, vrRecorder = null, vrChunks = [], vrRaf = null;
   let vrTimer = null, vrStart = 0, vrBlob = null, vrBlobUrl = null;
   let vrAudio = null, vrPlaying = false, vrStatic = null;
 
-  /* ── DOM refs ────────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * DOM REFS
+   * ════════════════════════════════════════════════════════════════════════ */
   const $ = id => document.getElementById(id);
-  const textEl       = $('text');
-  const timerDisp    = $('timer-display');
-  const timerDot     = $('timer-dot');
-  const timerLbl     = $('timer-state-lbl');
-  const stateDot     = $('state-dot');
-  const stateLbl     = $('state-label');
-  const startBtn     = $('start-btn');
-  const startLbl     = $('start-lbl');
-  const pauseBtn     = $('pause-btn');
-  const resetBtn     = $('reset-btn');
-  const sendBtn      = $('send-btn');
-  const wcWords      = $('wc-words');
-  const wcChars      = $('wc-chars');
-  const audioBlock   = $('audio-block');
-  const abDur        = $('ab-dur');
-  const abPlay       = $('ab-play');
-  const abRemove     = $('ab-remove');
-  const fileDrop     = $('file-drop');
-  const fileInput    = $('file-input');
-  const fileList     = $('file-list');
-  const voiceBtn     = $('voice-btn');
-  const voiceBadge   = $('voice-badge');
-  const welcomeOver  = $('welcome-overlay');
-  const sendOverlay  = $('send-overlay');
-  const voiceOverlay = $('voice-overlay');
-  const mbToggle     = $('mb-toggle');
-  const mbSend       = $('mb-send');
-  const mbDot        = $('mb-dot');
-  const mbTime       = $('mb-time');
+  const textEl = $('text'), timerDisp = $('timer-display'), timerDot = $('timer-dot');
+  const timerLbl = $('timer-state-lbl'), stateDot = $('state-dot');
+  const startBtn = $('start-btn'), pauseBtn = $('pause-btn'), resetBtn = $('reset-btn'), sendBtn = $('send-btn');
+  const wcWords = $('wc-words'), wcChars = $('wc-chars');
+  const audioBlock = $('audio-block'), abDur = $('ab-dur'), abPlay = $('ab-play'), abRemove = $('ab-remove');
+  const fileDrop = $('file-drop'), fileInput = $('file-input'), fileList = $('file-list');
+  const voiceBtn = $('voice-btn'), voiceBadge = $('voice-badge');
+  const welcomeOver = $('welcome-overlay'), sendOverlay = $('send-overlay');
+  const voiceOverlay = $('voice-overlay'), mbToggle = $('mb-toggle'), mbSend = $('mb-send');
+  const mbDot = $('mb-dot'), mbTime = $('mb-time');
 
-  /* ── Keyboard shortcut labels ────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * SHORTCUT LABELS
+   * ════════════════════════════════════════════════════════════════════════ */
   $('send-sc').textContent = cmdKey + '↵';
 
-  /* ── Timer loop ──────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * TIMER LOOP
+   * ════════════════════════════════════════════════════════════════════════ */
   const tick = () => {
     const ms = activeMs + (performance.now() - t0);
-    const t = fmtTime(ms);
-    timerDisp.textContent = t;
-    mbTime.textContent = t;
+    const tv = fmtTime(ms);
+    timerDisp.textContent = tv; mbTime.textContent = tv;
     raf = requestAnimationFrame(tick);
   };
 
-  /* ── State machine ───────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * STATE MACHINE
+   * ════════════════════════════════════════════════════════════════════════ */
   const updateState = (newState) => {
     state = newState;
-    const labels = { idle:'Idle', running:'Running', paused:'Paused', ready:'Ready' };
-    const dotColors = {
-      idle: 'var(--fg-2)',
-      running: 'rgb(35,131,226)',
-      paused: 'rgb(235,87,87)',
-      ready: 'rgb(68,168,109)'
-    };
+    const dotColors = { idle:'var(--fg-2)', running:'var(--accent)', paused:'var(--rec)', ready:'var(--success)' };
     stateDot.style.background = dotColors[state];
-    stateLbl.textContent = labels[state];
-    timerDot.style.background = state === 'running' ? '#000' : 'rgba(0,0,0,.2)';
-    timerLbl.textContent = labels[state].toUpperCase();
-    timerLbl.style.color = state === 'running' ? 'rgba(0,0,0,.7)' : 'rgba(0,0,0,.35)';
+    timerDot.style.background = state === 'running' ? 'var(--fg)' : 'var(--fg-2)';
     timerDisp.classList.toggle('running', state === 'running');
-    mbDot.style.background = state === 'running' ? '#000' : 'rgba(0,0,0,.2)';
+    mbDot.style.background = state === 'running' ? 'var(--fg)' : 'var(--fg-2)';
+    applyTranslations(); // refreshes state label text
   };
 
   const canSend = () => textEl.value.trim().length > 0 || audioRec !== null;
 
   const updateButtons = () => {
-    const hasContent = textEl.value.trim().length > 0 || audioRec !== null;
     startBtn.disabled = running;
     pauseBtn.disabled = !running;
-    sendBtn.disabled = !hasContent;
-    mbToggle.textContent = running ? 'Pause' : (activeMs > 0 ? 'Resume' : 'Start');
-    mbSend.disabled = !hasContent;
-    startLbl.textContent = activeMs > 0 ? 'Resume' : 'Start';
+    sendBtn.disabled = !canSend();
+    mbSend.disabled = !canSend();
   };
 
-  /* ── Actions ─────────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * ACTIONS
+   * ════════════════════════════════════════════════════════════════════════ */
   const start = () => {
     if (running) return;
-    running = true;
-    t0 = performance.now();
+    running = true; t0 = performance.now();
     textEl.disabled = false;
-    textEl.placeholder = 'Write your message…';
+    textEl.placeholder = t('textarea_placeholder');
     textEl.focus();
     updateState('running');
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(tick);
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
     updateButtons();
+    applyTranslations();
   };
 
   const pause = () => {
     if (!running) return;
-    running = false;
-    activeMs += performance.now() - t0;
-    t0 = null;
+    running = false; activeMs += performance.now() - t0; t0 = null;
     textEl.disabled = true;
-    textEl.placeholder = 'Press Start in the sidebar to begin writing…';
+    textEl.placeholder = t('textarea_disabled');
     cancelAnimationFrame(raf);
-    timerDisp.textContent = fmtTime(activeMs);
-    mbTime.textContent = fmtTime(activeMs);
-    updateState('paused');
-    updateButtons();
+    timerDisp.textContent = fmtTime(activeMs); mbTime.textContent = fmtTime(activeMs);
+    updateState('paused'); updateButtons(); applyTranslations();
   };
 
   const reset = () => {
     running = false; t0 = null; activeMs = 0;
     textEl.value = ''; textEl.disabled = true;
+    textEl.placeholder = t('textarea_disabled');
     cancelAnimationFrame(raf);
-    timerDisp.textContent = '00:00.000';
-    mbTime.textContent = '00:00.000';
-    updateState('idle');
-    updateButtons();
-    removeAudio();
-    files = []; uploadedFiles = []; uploadedAudio = null;
-    renderFileList();
+    timerDisp.textContent = '00:00.000'; mbTime.textContent = '00:00.000';
+    updateState('idle'); updateButtons();
+    removeAudio(); files = []; renderFileList();
   };
 
-  /* ── Send flow ───────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * SEND FLOW
+   * ════════════════════════════════════════════════════════════════════════ */
   const openSendModal = () => {
-    if (!canSend()) { toast('Write something first!'); return; }
+    if (!canSend()) { toast(t('toast_write_first')); return; }
     if (running) pause();
     $('modal-time').textContent = fmtTime(activeMs);
     $('modal-words').textContent = (textEl.value.trim().match(/\S+/g)||[]).length;
     $('modal-chars').textContent = textEl.value.length;
-    showFormStep();
-    sendOverlay.classList.add('open');
+    showFormStep(); sendOverlay.classList.add('open');
     setTimeout(() => $('sender-name').focus(), 50);
   };
 
@@ -1261,8 +1953,8 @@
   const showSentStep = () => {
     const wc = (textEl.value.trim().match(/\S+/g)||[]).length;
     $('sr-time').textContent = '⏱ ' + fmtTime(activeMs);
-    $('sr-words').textContent = wc + ' words';
-    $('sr-chars').textContent = textEl.value.length + ' chars';
+    $('sr-words').textContent = wc + ' ' + t(wc === 1 ? 'word' : 'words');
+    $('sr-chars').textContent = textEl.value.length + ' ' + t(textEl.value.length === 1 ? 'character' : 'characters');
     $('form-step').style.display = 'none';
     $('send-progress').classList.remove('show');
     $('sent-step').style.display = '';
@@ -1271,7 +1963,7 @@
   };
 
   const showErrorStep = (msg) => {
-    $('error-msg').textContent = msg || 'Could not send your message. Please try again.';
+    $('error-msg').textContent = msg || t('error_title');
     $('form-step').style.display = 'none';
     $('send-progress').classList.remove('show');
     $('sent-step').style.display = 'none';
@@ -1279,10 +1971,8 @@
     $('send-close').style.display = '';
   };
 
-  /* Upload a single Blob or File to /upload.php */
   const uploadItem = async (item, name) => {
-    const fd = new FormData();
-    fd.append('file', item, name);
+    const fd = new FormData(); fd.append('file', item, name);
     const resp = await fetch('upload.php', { method: 'POST', body: fd });
     const data = await resp.json();
     if (!data.ok) throw new Error(data.error || 'Upload failed');
@@ -1291,87 +1981,55 @@
 
   const doSend = async () => {
     showSendingStep();
-
     try {
-      // 1. Upload audio if any
       let audioInfo = null;
       if (audioRec?.blob) {
-        try {
-          const name = 'voice_message_' + Date.now() + '.webm';
-          audioInfo = await uploadItem(audioRec.blob, name);
-        } catch (e) {
-          throw new Error('Voice upload failed: ' + e.message);
-        }
+        audioInfo = await uploadItem(audioRec.blob, 'voice_message_' + Date.now() + '.webm');
       }
-
-      // 2. Upload files
       const fileInfos = [];
       for (const { file } of files) {
-        try {
-          const info = await uploadItem(file, file.name);
-          fileInfos.push(info);
-        } catch (e) {
-          throw new Error('File upload failed (' + file.name + '): ' + e.message);
-        }
+        fileInfos.push(await uploadItem(file, file.name));
       }
-
-      // 3. Build payload
       const name    = $('sender-name').value.trim() || 'Anonymous';
       const contact = $('sender-contact').value.trim();
       const message = textEl.value;
       const wc      = (message.trim().match(/\S+/g)||[]).length;
-
       const payload = {
         name, contact, message,
-        activeMs: Math.round(activeMs),
-        words:    wc,
-        chars:    message.length,
-        audioUrl:  audioInfo ? audioInfo.url  : null,
-        audioName: audioInfo ? audioInfo.name : null,
-        files:     fileInfos,
-        pin:       settingsPinCache || '1234',
+        activeMs: Math.round(activeMs), words: wc, chars: message.length,
+        audioUrl: audioInfo?.url || null, audioName: audioInfo?.name || null,
+        files: fileInfos, pin: settingsPinCache || '1234',
       };
-
-      // 4. Call send.php
-      const resp = await fetch('send.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const resp = await fetch('send.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
       const result = await resp.json();
       if (!result.ok) throw new Error(result.error || 'Send failed');
-
       showSentStep();
-
-    } catch (err) {
-      showErrorStep(err.message);
-    }
+    } catch (err) { showErrorStep(err.message); }
   };
 
-  /* Fallback: open mailto */
   const sendViaMailto = () => {
-    const name    = $('sender-name').value.trim() || 'Someone';
+    const name = $('sender-name').value.trim() || 'Someone';
     const contact = $('sender-contact').value.trim();
-    const sub     = encodeURIComponent('Message from ' + name);
-    const body    = encodeURIComponent(
-      'Hi Paul,\n\n' + name + ' sent you a message:\n\n' +
-      textEl.value +
-      (contact ? '\n\nReply to: ' + contact : '')
-    );
+    const sub = encodeURIComponent('Message from ' + name);
+    const body = encodeURIComponent('Hi Paul,\n\n' + name + ' sent you a message:\n\n' + textEl.value + (contact ? '\n\nReply to: ' + contact : ''));
     window.open('mailto:hello@paulfleury.com?subject=' + sub + '&body=' + body);
     showSentStep();
   };
 
-  /* ── Word / char count ───────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * WORD COUNT
+   * ════════════════════════════════════════════════════════════════════════ */
   const updateCounts = () => {
-    const t = textEl.value;
-    const wc = (t.trim().match(/\S+/g)||[]).length;
-    wcWords.textContent = wc + (wc === 1 ? ' word' : ' words');
-    wcChars.textContent = t.length + (t.length === 1 ? ' character' : ' characters');
+    const tv = textEl.value;
+    const wc = (tv.trim().match(/\S+/g)||[]).length;
+    wcWords.textContent = wc + ' ' + t(wc === 1 ? 'word' : 'words');
+    wcChars.textContent = tv.length + ' ' + t(tv.length === 1 ? 'character' : 'characters');
     updateButtons();
   };
 
-  /* ── Audio attachment ────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * AUDIO ATTACHMENT
+   * ════════════════════════════════════════════════════════════════════════ */
   const showAudioBlock = () => {
     if (!audioRec) return;
     abDur.textContent = '· ' + fmtDur(audioRec.durationMs);
@@ -1384,33 +2042,27 @@
     if (abAudio) { abAudio.pause(); abAudio = null; }
     if (audioRec?.url) URL.revokeObjectURL(audioRec.url);
     audioRec = null;
-    audioBlock.style.display = 'none';
-    audioBlock.classList.remove('mounted');
-    abPlay.textContent = '▶ Play';
-    voiceBadge.style.display = 'none';
+    audioBlock.style.display = 'none'; audioBlock.classList.remove('mounted');
+    abPlay.textContent = t('play'); voiceBadge.style.display = 'none';
     updateButtons();
   };
 
   abPlay.addEventListener('click', () => {
     if (!audioRec) return;
-    if (abAudio) {
-      abAudio.pause(); abAudio.currentTime = 0; abAudio = null;
-      abPlay.textContent = '▶ Play';
-    } else {
-      abAudio = new Audio(audioRec.url);
-      abAudio.onended = () => { abAudio = null; abPlay.textContent = '▶ Play'; };
-      abAudio.play();
-      abPlay.textContent = '⏸ Pause';
-    }
+    if (abAudio) { abAudio.pause(); abAudio.currentTime = 0; abAudio = null; abPlay.textContent = t('play'); }
+    else { abAudio = new Audio(audioRec.url); abAudio.onended = () => { abAudio = null; abPlay.textContent = t('play'); }; abAudio.play(); abPlay.textContent = t('pause_play'); }
   });
   abRemove.addEventListener('click', removeAudio);
 
-  /* ── File upload ─────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * FILE UPLOAD
+   * ════════════════════════════════════════════════════════════════════════ */
   const addFiles = (newFiles) => {
     const added = Array.from(newFiles).map(f => ({ id: ++fileIdCtr, file: f }));
     files = [...files, ...added];
     renderFileList();
-    toast(added.length === 1 ? '1 file attached.' : added.length + ' files attached.');
+    const n = added.length;
+    toast(n === 1 ? t('toast_attached_1') : t('toast_attached_n', { n }));
   };
 
   const removeFile = (id) => { files = files.filter(f => f.id !== id); renderFileList(); };
@@ -1418,15 +2070,8 @@
   const renderFileList = () => {
     fileList.innerHTML = '';
     files.forEach(({ id, file }) => {
-      const div = document.createElement('div');
-      div.className = 'fi';
-      div.innerHTML = `
-        <span class="fi-type-icon">${typeIcon(file.type)}</span>
-        <span class="fi-name" title="${file.name}">${file.name}</span>
-        <span class="fi-badge">${typeLabel(file.type)}</span>
-        <span class="fi-size">${fmtSize(file.size)}</span>
-        <button class="fi-rm" title="Remove ${file.name}">✕</button>
-      `;
+      const div = document.createElement('div'); div.className = 'fi';
+      div.innerHTML = `<span>${typeIcon(file.type)}</span><span class="fi-name" title="${file.name}">${file.name}</span><span class="fi-badge">${typeLabel(file.type)}</span><span class="fi-size">${fmtSize(file.size)}</span><button class="fi-rm" title="Remove">✕</button>`;
       div.querySelector('.fi-rm').addEventListener('click', e => { e.stopPropagation(); removeFile(id); });
       fileList.appendChild(div);
     });
@@ -1435,49 +2080,43 @@
   fileDrop.addEventListener('click', () => fileInput.click());
   fileDrop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
   fileInput.addEventListener('change', e => { if (e.target.files?.length) { addFiles(e.target.files); e.target.value = ''; } });
-  fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('dragging'); $('fd-label').textContent = 'Drop to attach'; $('fd-hint').style.display = 'none'; });
-  fileDrop.addEventListener('dragleave', e => { if (!fileDrop.contains(e.relatedTarget)) { fileDrop.classList.remove('dragging'); $('fd-label').textContent = 'Attach file'; $('fd-hint').style.display = ''; } });
-  fileDrop.addEventListener('drop', e => { e.preventDefault(); fileDrop.classList.remove('dragging'); $('fd-label').textContent = 'Attach file'; $('fd-hint').style.display = ''; if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
+  fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('dragging'); $('fd-label').textContent = t('attach_file'); $('fd-hint').style.display = 'none'; });
+  fileDrop.addEventListener('dragleave', e => { if (!fileDrop.contains(e.relatedTarget)) { fileDrop.classList.remove('dragging'); $('fd-label').textContent = t('attach_file'); $('fd-hint').style.display = ''; } });
+  fileDrop.addEventListener('drop', e => { e.preventDefault(); fileDrop.classList.remove('dragging'); if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
 
-  /* ── Voice recorder ──────────────────────────────────────────────────── */
-  const vrCanvas = $('voice-canvas');
-  const vrTimerEl = $('voice-timer');
-  const vrActions = $('voice-actions');
+  /* ════════════════════════════════════════════════════════════════════════
+   * VOICE RECORDER
+   * ════════════════════════════════════════════════════════════════════════ */
+  const vrCanvas = $('voice-canvas'), vrTimerEl = $('voice-timer'), vrActions = $('voice-actions');
 
   const vrDrawWaveform = (live) => {
-    const ctx = vrCanvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
+    const ctx = vrCanvas.getContext('2d'), dpr = window.devicePixelRatio || 1;
     const rect = vrCanvas.getBoundingClientRect();
-    vrCanvas.width = rect.width * dpr;
-    vrCanvas.height = rect.height * dpr;
+    vrCanvas.width = rect.width * dpr; vrCanvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
     const w = rect.width, h = rect.height;
-    ctx.fillStyle = 'rgb(247,246,243)';
+    const isDark = getEffectiveTheme() === 'dark';
+    ctx.fillStyle = isDark ? 'rgb(32,31,29)' : 'rgb(247,246,243)';
     ctx.fillRect(0,0,w,h);
-    const barCount = 48, barWidth = 3;
-    const gap = (w - barCount * barWidth) / (barCount + 1);
-
+    const barCount = 48, barWidth = 3, gap = (w - barCount * barWidth) / (barCount + 1);
     if (live && vrAnalyser) {
-      const data = new Uint8Array(vrAnalyser.frequencyBinCount);
-      vrAnalyser.getByteTimeDomainData(data);
-      ctx.fillStyle = 'rgba(55,53,47,.85)';
+      const data = new Uint8Array(vrAnalyser.frequencyBinCount); vrAnalyser.getByteTimeDomainData(data);
+      ctx.fillStyle = isDark ? 'rgba(229,225,219,.8)' : 'rgba(55,53,47,.85)';
       for (let i = 0; i < barCount; i++) {
         const v = (data[Math.floor(i/barCount*data.length)] - 128) / 128;
-        const bh = Math.max(2, Math.abs(v)*h*.8);
-        const x = gap + i*(barWidth+gap), y = (h-bh)/2;
+        const bh = Math.max(2, Math.abs(v)*h*.8), x = gap + i*(barWidth+gap), y = (h-bh)/2;
         ctx.beginPath(); ctx.roundRect(x,y,barWidth,bh,1.5); ctx.fill();
       }
       vrRaf = requestAnimationFrame(() => vrDrawWaveform(true));
     } else if (vrStatic) {
-      ctx.fillStyle = 'rgba(55,53,47,.5)';
+      ctx.fillStyle = isDark ? 'rgba(229,225,219,.45)' : 'rgba(55,53,47,.5)';
       for (let i = 0; i < barCount; i++) {
         const v = (vrStatic[Math.floor(i/barCount*vrStatic.length)] - 128) / 128;
-        const bh = Math.max(2, Math.abs(v)*h*.8);
-        const x = gap + i*(barWidth+gap), y = (h-bh)/2;
+        const bh = Math.max(2, Math.abs(v)*h*.8), x = gap + i*(barWidth+gap), y = (h-bh)/2;
         ctx.beginPath(); ctx.roundRect(x,y,barWidth,bh,1.5); ctx.fill();
       }
     } else {
-      ctx.fillStyle = 'rgba(55,53,47,.18)';
+      ctx.fillStyle = isDark ? 'rgba(229,225,219,.15)' : 'rgba(55,53,47,.18)';
       for (let i = 0; i < barCount; i++) {
         const x = gap + i*(barWidth+gap), y = (h-2)/2;
         ctx.beginPath(); ctx.roundRect(x,y,barWidth,2,1); ctx.fill();
@@ -1486,56 +2125,33 @@
   };
 
   const vrSetActions = (s) => {
-    vrActions.innerHTML = '';
-    $('voice-rec-indicator').classList.remove('show');
-
+    vrActions.innerHTML = ''; $('voice-rec-indicator').classList.remove('show');
     if (s === 'idle') {
       vrActions.style.cssText = 'display:flex;flex-direction:column;align-items:center;margin-top:20px';
-      const btn = document.createElement('button');
-      btn.className = 'rec-circle'; btn.id = 'rec-start'; btn.setAttribute('aria-label','Start recording');
-      btn.innerHTML = '<span style="color:#fff;font-size:20px;line-height:1;margin-top:-1px">●</span>';
-      btn.style.background = 'rgb(235,87,87)';
+      const btn = document.createElement('button'); btn.className = 'rec-circle'; btn.id = 'rec-start'; btn.setAttribute('aria-label','Start recording');
+      btn.innerHTML = '<span style="color:#fff;font-size:20px;line-height:1;margin-top:-1px">●</span>'; btn.style.background = 'var(--rec)';
       btn.addEventListener('click', vrStartRecording);
-      btn.addEventListener('mouseenter', () => btn.style.transform = 'scale(1.05)');
-      btn.addEventListener('mouseleave', () => btn.style.transform = 'scale(1)');
-      const note = document.createElement('p');
-      note.style.cssText = 'margin-top:10px;font-size:13px;color:var(--fg-2)';
-      note.textContent = 'Click to start recording';
+      const note = document.createElement('p'); note.id = 'voice-rec-note'; note.style.cssText = 'margin-top:10px;font-size:13px;color:var(--fg-2)'; note.textContent = t('click_to_record');
       vrActions.appendChild(btn); vrActions.appendChild(note);
-
     } else if (s === 'recording') {
       vrActions.style.cssText = 'display:flex;flex-direction:column;align-items:center;margin-top:16px';
       $('voice-rec-indicator').classList.add('show');
-      const btn = document.createElement('button');
-      btn.className = 'rec-circle'; btn.setAttribute('aria-label','Stop recording');
-      btn.style.background = 'var(--fg)';
-      btn.innerHTML = '<span class="rec-square"></span>';
-      btn.addEventListener('click', vrStopRecording);
-      btn.addEventListener('mouseenter', () => btn.style.transform = 'scale(1.05)');
-      btn.addEventListener('mouseleave', () => btn.style.transform = 'scale(1)');
-      const note = document.createElement('p');
-      note.style.cssText = 'margin-top:10px;font-size:13px;color:var(--fg-2)';
-      note.textContent = 'Click to stop';
+      const btn = document.createElement('button'); btn.className = 'rec-circle'; btn.style.background = 'var(--fg)';
+      btn.innerHTML = '<span class="rec-square"></span>'; btn.addEventListener('click', vrStopRecording);
+      const note = document.createElement('p'); note.style.cssText = 'margin-top:10px;font-size:13px;color:var(--fg-2)'; note.textContent = t('click_to_stop');
       vrActions.appendChild(btn); vrActions.appendChild(note);
-
     } else if (s === 'recorded') {
       vrActions.style.cssText = 'display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;margin-top:20px';
-      const playBtn = document.createElement('button'); playBtn.className = 'vbtn'; playBtn.textContent = '▶ Play';
+      const playBtn = document.createElement('button'); playBtn.className = 'vbtn'; playBtn.textContent = t('play');
       playBtn.addEventListener('click', () => {
-        if (vrPlaying && vrAudio) {
-          vrAudio.pause(); vrAudio.currentTime = 0; vrAudio = null; vrPlaying = false;
-          playBtn.textContent = '▶ Play';
-        } else {
-          vrAudio = new Audio(vrBlobUrl); vrPlaying = true; playBtn.textContent = '⏸ Pause';
-          vrAudio.onended = () => { vrPlaying = false; vrAudio = null; playBtn.textContent = '▶ Play'; };
-          vrAudio.play();
-        }
+        if (vrPlaying && vrAudio) { vrAudio.pause(); vrAudio.currentTime = 0; vrAudio = null; vrPlaying = false; playBtn.textContent = t('play'); }
+        else { vrAudio = new Audio(vrBlobUrl); vrPlaying = true; playBtn.textContent = t('pause_play'); vrAudio.onended = () => { vrPlaying = false; vrAudio = null; playBtn.textContent = t('play'); }; vrAudio.play(); }
       });
-      const discardBtn = document.createElement('button'); discardBtn.className = 'vbtn muted'; discardBtn.textContent = '✕ Discard';
+      const discardBtn = document.createElement('button'); discardBtn.className = 'vbtn muted'; discardBtn.textContent = '✕ ' + t('reset');
       discardBtn.addEventListener('click', vrDiscard);
-      const attachBtn = document.createElement('button'); attachBtn.className = 'vbtn blue'; attachBtn.textContent = 'Attach to message →';
+      const attachBtn = document.createElement('button'); attachBtn.className = 'vbtn blue'; attachBtn.textContent = t('attach_file') + ' →';
       attachBtn.addEventListener('click', vrAttach);
-      [playBtn, discardBtn, attachBtn].forEach(b => { b.style.fontFamily = 'var(--body)'; vrActions.appendChild(b); });
+      [playBtn, discardBtn, attachBtn].forEach(b => vrActions.appendChild(b));
     }
   };
 
@@ -1543,8 +2159,7 @@
     $('voice-error').classList.remove('show');
     try {
       vrStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      vrAudioCtx = new AudioContext();
-      vrAnalyser = vrAudioCtx.createAnalyser(); vrAnalyser.fftSize = 256;
+      vrAudioCtx = new AudioContext(); vrAnalyser = vrAudioCtx.createAnalyser(); vrAnalyser.fftSize = 256;
       vrAudioCtx.createMediaStreamSource(vrStream).connect(vrAnalyser);
       vrRecorder = new MediaRecorder(vrStream); vrChunks = [];
       vrRecorder.ondataavailable = e => { if (e.data.size > 0) vrChunks.push(e.data); };
@@ -1552,52 +2167,27 @@
         vrBlob = new Blob(vrChunks, { type: 'audio/webm' });
         if (vrBlobUrl) URL.revokeObjectURL(vrBlobUrl);
         vrBlobUrl = URL.createObjectURL(vrBlob);
-        if (vrAnalyser) {
-          const d = new Uint8Array(vrAnalyser.frequencyBinCount);
-          vrStatic = new Uint8Array(d.length);
-          for (let i = 0; i < d.length; i++)
-            vrStatic[i] = 128 + Math.round(Math.sin(i*.3)*40 + Math.sin(i*.7)*20 + Math.cos(i*.15)*30);
-        }
+        if (vrAnalyser) { const d = new Uint8Array(vrAnalyser.frequencyBinCount); vrStatic = new Uint8Array(d.length); for (let i = 0; i < d.length; i++) vrStatic[i] = 128 + Math.round(Math.sin(i*.3)*40 + Math.sin(i*.7)*20 + Math.cos(i*.15)*30); }
         vrStream?.getTracks().forEach(t => t.stop()); vrStream = null;
         if (vrAudioCtx?.state !== 'closed') { vrAudioCtx?.close(); vrAudioCtx = null; }
         vrState = 'recorded'; vrSetActions('recorded');
         setTimeout(() => vrDrawWaveform(false), 50);
       };
-      vrRecorder.start();
-      vrStart = Date.now(); vrElapsed = 0;
+      vrRecorder.start(); vrStart = Date.now(); vrElapsed = 0;
       vrState = 'recording'; vrSetActions('recording');
       vrTimerEl.style.marginTop = '8px';
       vrTimer = setInterval(() => { vrElapsed = Date.now() - vrStart; vrTimerEl.textContent = fmtDur(vrElapsed); }, 100);
       vrDrawWaveform(true);
     } catch {
-      $('voice-error-msg').textContent = 'Microphone access is required to record a voice message.';
+      $('voice-error-msg').textContent = t('mic_error');
       $('voice-error').classList.add('show');
       vrState = 'idle'; vrSetActions('idle');
     }
   };
 
-  const vrStopRecording = () => {
-    clearInterval(vrTimer); vrTimer = null;
-    cancelAnimationFrame(vrRaf); vrRaf = null;
-    if (vrRecorder?.state === 'recording') vrRecorder.stop();
-  };
-
-  const vrDiscard = () => {
-    if (vrAudio) { vrAudio.pause(); vrAudio = null; } vrPlaying = false;
-    if (vrBlobUrl) { URL.revokeObjectURL(vrBlobUrl); vrBlobUrl = null; }
-    vrBlob = null; vrStatic = null; vrElapsed = 0;
-    vrTimerEl.textContent = '00:00'; vrTimerEl.style.marginTop = '16px';
-    vrState = 'idle'; vrSetActions('idle');
-    setTimeout(() => vrDrawWaveform(false), 50);
-  };
-
-  const vrAttach = () => {
-    if (!vrBlob || !vrBlobUrl) return;
-    audioRec = { blob: vrBlob, url: vrBlobUrl, durationMs: vrElapsed };
-    vrBlobUrl = null;
-    closeVoiceModal(); showAudioBlock(); updateButtons();
-    toast('Voice message attached.');
-  };
+  const vrStopRecording = () => { clearInterval(vrTimer); vrTimer = null; cancelAnimationFrame(vrRaf); vrRaf = null; if (vrRecorder?.state === 'recording') vrRecorder.stop(); };
+  const vrDiscard = () => { if (vrAudio) { vrAudio.pause(); vrAudio = null; } vrPlaying = false; if (vrBlobUrl) { URL.revokeObjectURL(vrBlobUrl); vrBlobUrl = null; } vrBlob = null; vrStatic = null; vrElapsed = 0; vrTimerEl.textContent = '00:00'; vrTimerEl.style.marginTop = '16px'; vrState = 'idle'; vrSetActions('idle'); setTimeout(() => vrDrawWaveform(false), 50); };
+  const vrAttach = () => { if (!vrBlob || !vrBlobUrl) return; audioRec = { blob: vrBlob, url: vrBlobUrl, durationMs: vrElapsed }; vrBlobUrl = null; closeVoiceModal(); showAudioBlock(); updateButtons(); toast(t('toast_voice_attached')); };
 
   const openVoiceModal = () => {
     vrState = 'idle'; vrElapsed = 0; vrBlob = null;
@@ -1605,181 +2195,145 @@
     vrStatic = null; vrPlaying = false;
     $('voice-error').classList.remove('show');
     vrTimerEl.textContent = '00:00'; vrTimerEl.style.marginTop = '16px';
-    vrSetActions('idle');
-    voiceOverlay.classList.add('open');
+    vrSetActions('idle'); voiceOverlay.classList.add('open');
     setTimeout(() => vrDrawWaveform(false), 50);
   };
 
   const closeVoiceModal = () => {
-    cancelAnimationFrame(vrRaf); vrRaf = null;
-    clearInterval(vrTimer); vrTimer = null;
+    cancelAnimationFrame(vrRaf); vrRaf = null; clearInterval(vrTimer); vrTimer = null;
     vrStream?.getTracks().forEach(t => t.stop()); vrStream = null;
     if (vrAudioCtx?.state !== 'closed') { vrAudioCtx?.close(); vrAudioCtx = null; }
     if (vrAudio) { vrAudio.pause(); vrAudio = null; }
-    vrRecorder = null; vrAnalyser = null;
-    voiceOverlay.classList.remove('open');
+    vrRecorder = null; vrAnalyser = null; voiceOverlay.classList.remove('open');
   };
 
-  /* ── Settings modal ──────────────────────────────────────────────────── */
-  const showPanel = (id) => {
-    ['panel-pin','panel-setup','panel-manage'].forEach(p => {
-      $('settings-body').querySelector('#' + p)?.classList.toggle('active', p === id);
-    });
-    // Fallback: manually check since CSS class might differ
-    document.querySelectorAll('.s-panel').forEach(el => {
-      el.classList.toggle('active', el.id === id);
+  /* ════════════════════════════════════════════════════════════════════════
+   * LANGUAGE MODAL
+   * ════════════════════════════════════════════════════════════════════════ */
+  const buildLangList = () => {
+    const list = $('lang-list'); list.innerHTML = '';
+    Object.entries(LANGS).forEach(([code, info]) => {
+      const btn = document.createElement('button'); btn.className = 'lang-item' + (code === currentLang ? ' active' : '');
+      btn.dataset.lang = code;
+      btn.innerHTML = `<span class="lang-flag">${info.flag}</span><div class="lang-info"><div class="lang-name">${info.name}</div><div class="lang-native">${info.native}</div></div>`;
+      btn.addEventListener('click', () => {
+        currentLang = code;
+        localStorage.setItem('to_lang', code);
+        applyTranslations();
+        buildLangList();
+        document.getElementById('lang-flag').textContent = info.flag;
+        toast(info.name);
+      });
+      list.appendChild(btn);
     });
   };
+
+  const openLangModal = () => { buildLangList(); $('lang-overlay').classList.add('open'); };
+  const closeLangModal = () => $('lang-overlay').classList.remove('open');
+
+  $('lang-btn').addEventListener('click', openLangModal);
+  $('lang-close').addEventListener('click', closeLangModal);
+  $('lang-overlay').addEventListener('click', e => { if (e.target === $('lang-overlay')) closeLangModal(); });
+
+  /* ════════════════════════════════════════════════════════════════════════
+   * THEME MODAL
+   * ════════════════════════════════════════════════════════════════════════ */
+  const openThemeModal = () => { applyTheme(); $('theme-overlay').classList.add('open'); };
+  const closeThemeModal = () => $('theme-overlay').classList.remove('open');
+
+  $('theme-btn').addEventListener('click', openThemeModal);
+  $('theme-close').addEventListener('click', closeThemeModal);
+  $('theme-overlay').addEventListener('click', e => { if (e.target === $('theme-overlay')) closeThemeModal(); });
+
+  document.querySelectorAll('.theme-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentThemePref = btn.dataset.themeVal;
+      localStorage.setItem('to_theme', currentThemePref);
+      applyTheme();
+      const names = { light: t('theme_light'), dark: t('theme_dark'), system: t('theme_system') };
+      toast(names[currentThemePref] || currentThemePref);
+    });
+  });
+
+  /* ════════════════════════════════════════════════════════════════════════
+   * SETTINGS MODAL
+   * ════════════════════════════════════════════════════════════════════════ */
+  const showPanel = (id) => document.querySelectorAll('.s-panel').forEach(el => el.classList.toggle('active', el.id === id));
 
   const openSettings = async () => {
-    // Clear errors
-    ['s-pin-error','s-setup-error','s-manage-error','s-pin-change-error'].forEach(id => {
-      const el = $(id); if (el) { el.classList.remove('show'); el.textContent = ''; }
-    });
-    // Clear inputs
-    ['s-pin-input','s-apikey-setup','s-pin-setup','s-apikey-manage','s-new-pin'].forEach(id => {
-      const el = $(id); if (el) el.value = '';
-    });
-
-    // Check if key exists
+    ['s-pin-error','s-setup-error','s-manage-error','s-pin-change-error'].forEach(id => { const el = $(id); if (el) { el.classList.remove('show'); el.textContent = ''; } });
+    ['s-pin-input','s-apikey-setup','s-pin-setup','s-apikey-manage','s-new-pin'].forEach(id => { const el = $(id); if (el) el.value = ''; });
     try {
-      const resp = await fetch('settings.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_status' }),
-      });
+      const resp = await fetch('settings.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'get_status' }) });
       const data = await resp.json();
-      if (data.hasKey) {
-        if (settingsPinCache) {
-          showPanel('panel-manage');
-        } else {
-          showPanel('panel-pin');
-        }
-      } else {
-        showPanel('panel-setup');
-      }
-    } catch {
-      showPanel('panel-setup');
-    }
-
+      showPanel(data.hasKey ? (settingsPinCache ? 'panel-manage' : 'panel-pin') : 'panel-setup');
+    } catch { showPanel('panel-setup'); }
     $('settings-overlay').classList.add('open');
   };
 
-  const closeSettings = () => {
-    $('settings-overlay').classList.remove('open');
-  };
+  const closeSettings = () => $('settings-overlay').classList.remove('open');
 
-  // Tabs in manage panel
   document.querySelectorAll('.s-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const which = tab.dataset.tab;
-      $('tab-key').style.display = which === 'key' ? '' : 'none';
-      $('tab-pin').style.display = which === 'pin' ? '' : 'none';
+      document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active');
+      $('tab-key').style.display = tab.dataset.tab === 'key' ? '' : 'none';
+      $('tab-pin').style.display = tab.dataset.tab === 'pin' ? '' : 'none';
     });
   });
 
-  // PIN verify
   $('s-pin-verify').addEventListener('click', async () => {
-    const pin = $('s-pin-input').value.trim();
+    const pin = $('s-pin-input').value.trim(); const el = $('s-pin-error'); el.classList.remove('show');
     if (!pin) return;
-    const el = $('s-pin-error');
-    el.classList.remove('show');
     try {
-      const resp = await fetch('settings.php', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify_pin', pin }),
-      });
+      const resp = await fetch('settings.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'verify_pin', pin }) });
       const data = await resp.json();
       if (data.ok) {
         settingsPinCache = pin;
-        // Populate current key field
-        try {
-          const kr = await fetch('settings.php', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'get_key', pin }),
-          });
-          const kd = await kr.json();
-          if (kd.ok) $('s-apikey-manage').value = kd.apiKey;
-        } catch {}
+        try { const kr = await fetch('settings.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'get_key', pin }) }); const kd = await kr.json(); if (kd.ok) $('s-apikey-manage').value = kd.apiKey; } catch {}
         showPanel('panel-manage');
-      } else {
-        el.textContent = 'Incorrect PIN.'; el.classList.add('show');
-      }
-    } catch {
-      el.textContent = 'Server error. Check settings.php is available.'; el.classList.add('show');
-    }
+      } else { el.textContent = t('pin_error'); el.classList.add('show'); }
+    } catch { el.textContent = 'Server error.'; el.classList.add('show'); }
   });
-
-  // Enter on pin input
   $('s-pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('s-pin-verify').click(); });
 
-  // Setup save
   $('s-setup-save').addEventListener('click', async () => {
-    const apiKey = $('s-apikey-setup').value.trim();
-    const pin    = $('s-pin-setup').value.trim();
-    const el     = $('s-setup-error');
-    el.classList.remove('show');
+    const apiKey = $('s-apikey-setup').value.trim(), pin = $('s-pin-setup').value.trim(), el = $('s-setup-error'); el.classList.remove('show');
     if (!apiKey) { el.textContent = 'API key is required.'; el.classList.add('show'); return; }
     if (!pin || pin.length < 4) { el.textContent = 'PIN must be at least 4 characters.'; el.classList.add('show'); return; }
     try {
-      const resp = await fetch('settings.php', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save', apiKey, pin }),
-      });
+      const resp = await fetch('settings.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'save', apiKey, pin }) });
       const data = await resp.json();
-      if (data.ok) {
-        settingsPinCache = pin;
-        closeSettings();
-        toast('Settings saved. Email delivery enabled.');
-      } else {
-        el.textContent = data.error || 'Save failed.'; el.classList.add('show');
-      }
-    } catch {
-      el.textContent = 'Server error.'; el.classList.add('show');
-    }
-  });
-
-  // Manage save (update API key)
-  $('s-manage-save').addEventListener('click', async () => {
-    const apiKey = $('s-apikey-manage').value.trim();
-    const el     = $('s-manage-error');
-    el.classList.remove('show');
-    if (!apiKey) { el.textContent = 'API key is required.'; el.classList.add('show'); return; }
-    const pin = settingsPinCache;
-    if (!pin) { el.textContent = 'Session expired. Please re-open settings.'; el.classList.add('show'); return; }
-    try {
-      const resp = await fetch('settings.php', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save', apiKey, pin }),
-      });
-      const data = await resp.json();
-      if (data.ok) { closeSettings(); toast('API key updated.'); }
+      if (data.ok) { settingsPinCache = pin; closeSettings(); toast(t('toast_settings_saved')); }
       else { el.textContent = data.error || 'Save failed.'; el.classList.add('show'); }
     } catch { el.textContent = 'Server error.'; el.classList.add('show'); }
   });
 
-  // Change PIN
+  $('s-manage-save').addEventListener('click', async () => {
+    const apiKey = $('s-apikey-manage').value.trim(), el = $('s-manage-error'); el.classList.remove('show');
+    if (!apiKey) { el.textContent = 'API key is required.'; el.classList.add('show'); return; }
+    const pin = settingsPinCache;
+    if (!pin) { el.textContent = 'Session expired.'; el.classList.add('show'); return; }
+    try {
+      const resp = await fetch('settings.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'save', apiKey, pin }) });
+      const data = await resp.json();
+      if (data.ok) { closeSettings(); toast(t('toast_api_updated')); }
+      else { el.textContent = data.error || 'Save failed.'; el.classList.add('show'); }
+    } catch { el.textContent = 'Server error.'; el.classList.add('show'); }
+  });
+
   $('s-change-pin-btn').addEventListener('click', async () => {
-    const newPin = $('s-new-pin').value.trim();
-    const el     = $('s-pin-change-error');
-    el.classList.remove('show');
+    const newPin = $('s-new-pin').value.trim(), el = $('s-pin-change-error'); el.classList.remove('show');
     if (!newPin || newPin.length < 4) { el.textContent = 'PIN must be at least 4 characters.'; el.classList.add('show'); return; }
     const currentPin = settingsPinCache;
     if (!currentPin) { el.textContent = 'Session expired.'; el.classList.add('show'); return; }
     try {
-      const resp = await fetch('settings.php', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'change_pin', currentPin, newPin }),
-      });
+      const resp = await fetch('settings.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'change_pin', currentPin, newPin }) });
       const data = await resp.json();
-      if (data.ok) { settingsPinCache = newPin; closeSettings(); toast('PIN updated.'); }
+      if (data.ok) { settingsPinCache = newPin; closeSettings(); toast(t('toast_pin_updated')); }
       else { el.textContent = data.error || 'Update failed.'; el.classList.add('show'); }
     } catch { el.textContent = 'Server error.'; el.classList.add('show'); }
   });
 
-  // Cancel buttons
   $('s-pin-cancel').addEventListener('click', closeSettings);
   $('s-setup-cancel').addEventListener('click', closeSettings);
   $('s-manage-close').addEventListener('click', closeSettings);
@@ -1787,7 +2341,9 @@
   $('settings-close').addEventListener('click', closeSettings);
   $('settings-overlay').addEventListener('click', e => { if (e.target === $('settings-overlay')) closeSettings(); });
 
-  /* ── Event listeners ─────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * EVENT LISTENERS
+   * ════════════════════════════════════════════════════════════════════════ */
   startBtn.addEventListener('click', start);
   pauseBtn.addEventListener('click', pause);
   resetBtn.addEventListener('click', reset);
@@ -1795,7 +2351,6 @@
   voiceBtn.addEventListener('click', openVoiceModal);
   textEl.addEventListener('input', updateCounts);
 
-  // Settings
   $('settings-btn').addEventListener('click', openSettings);
 
   // Mobile bar
@@ -1818,11 +2373,16 @@
   $('voice-close').addEventListener('click', () => { if (vrState === 'recording') vrStopRecording(); else closeVoiceModal(); });
   voiceOverlay.addEventListener('click', e => { if (e.target === voiceOverlay) { if (vrState === 'recording') vrStopRecording(); else closeVoiceModal(); } });
 
-  /* ── Keyboard shortcuts ──────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * KEYBOARD SHORTCUTS
+   * ════════════════════════════════════════════════════════════════════════ */
   window.addEventListener('keydown', e => {
+    const langOpen = $('lang-overlay').classList.contains('open');
+    const themeOpen = $('theme-overlay').classList.contains('open');
     const modalOpen = sendOverlay.classList.contains('open') ||
                       voiceOverlay.classList.contains('open') ||
-                      $('settings-overlay').classList.contains('open');
+                      $('settings-overlay').classList.contains('open') ||
+                      langOpen || themeOpen;
     const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
 
     // Space → Start/Resume (when idle/paused, not in modal/input)
@@ -1830,7 +2390,7 @@
       e.preventDefault(); start(); return;
     }
 
-    // ⌘↵ / Ctrl+Enter → Send (when not in send modal)
+    // ⌘↵ / Ctrl+Enter → open send modal or submit
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault();
       if (!sendOverlay.classList.contains('open') && canSend()) openSendModal();
@@ -1838,8 +2398,10 @@
       return;
     }
 
-    // Esc → close modals or pause
+    // Esc → close modals in priority order, or pause
     if (e.key === 'Escape') {
+      if (langOpen)  { e.preventDefault(); closeLangModal(); return; }
+      if (themeOpen) { e.preventDefault(); closeThemeModal(); return; }
       if ($('settings-overlay').classList.contains('open')) { e.preventDefault(); closeSettings(); return; }
       if (sendOverlay.classList.contains('open')) { e.preventDefault(); sendOverlay.classList.remove('open'); return; }
       if (voiceOverlay.classList.contains('open')) { e.preventDefault(); if (vrState === 'recording') vrStopRecording(); else closeVoiceModal(); return; }
@@ -1847,7 +2409,12 @@
     }
   });
 
-  /* ── Init ────────────────────────────────────────────────────────────── */
+  /* ════════════════════════════════════════════════════════════════════════
+   * INIT
+   * — Apply persisted theme first (before paint), then language, then state
+   * ════════════════════════════════════════════════════════════════════════ */
+  applyTheme();
+  applyTranslations();
   updateState('idle');
   updateButtons();
 

@@ -1,6 +1,6 @@
 # To
 
-[![Version](https://img.shields.io/badge/version-1.2.2-000000?style=flat-square)](https://github.com/paulfxyz/to/releases/tag/v1.2.2)
+[![Version](https://img.shields.io/badge/version-2.0.0-000000?style=flat-square)](https://github.com/paulfxyz/to/releases/tag/v2.0.0)
 [![License](https://img.shields.io/badge/license-MIT-000000?style=flat-square)](LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
 [![Resend](https://img.shields.io/badge/email-Resend-000000?style=flat-square)](https://resend.com)
@@ -29,6 +29,8 @@ Zero npm. Zero build step. Three PHP files. One HTML file. Ships on any shared h
 | **Success screen** | Stats recap + "Go to paulfleury.com" button |
 | **Serverless-ready** | Pure PHP 8.1 — no composer, no cron, no database |
 | **Auto cache cleanup** | Files older than 30 days deleted probabilistically (no cron needed) |
+| **i18n — 10 languages** | EN 🇬🇧 FR 🇫🇷 DE 🇩🇪 IT 🇮🇹 ES 🇪🇸 NL 🇳🇱 ZH 🇨🇳 HI 🇮🇳 JA 🇯🇵 RU 🇷🇺 — persisted in `localStorage` |
+| **Dark / Light / System theme** | Bulb icon in topbar; follows OS preference by default; persisted in `localStorage` |
 
 ---
 
