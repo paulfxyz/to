@@ -1,250 +1,278 @@
-# To
+# 🐺 howlr
 
-[![Version](https://img.shields.io/badge/version-2.0.0-000000?style=flat-square)](https://github.com/paulfxyz/to/releases/tag/v2.0.0)
-[![License](https://img.shields.io/badge/license-MIT-000000?style=flat-square)](LICENSE)
-[![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
-[![Resend](https://img.shields.io/badge/email-Resend-000000?style=flat-square)](https://resend.com)
-[![Live](https://img.shields.io/badge/live-to.paulfleury.com-000000?style=flat-square)](https://to.paulfleury.com)
-[![No dependencies](https://img.shields.io/badge/dependencies-none-brightgreen?style=flat-square)](https://github.com/paulfxyz/to)
+[![Version](https://img.shields.io/badge/version-3.0.0-ff6b35?style=flat-square)](https://github.com/paulfxyz/howlr/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
+[![Node](https://img.shields.io/badge/node-20-green?style=flat-square)](https://nodejs.org)
+[![Fly.io](https://img.shields.io/badge/backend-Fly.io-6366f1?style=flat-square)](https://fly.io)
+[![Open Source](https://img.shields.io/badge/open_source-yes-orange?style=flat-square)](https://github.com/paulfxyz/howlr)
 
-**A personal, timed message canvas — with email delivery, voice recording, and file attachments.**
+**howlr** is a free, open-source SaaS platform where anyone can claim a personal handle and receive timed, distraction-free messages at `howlr.to/:handle`.
 
-`to.paulfleury.com` is a minimal Notion-inspired writing surface that lets anyone send a direct, timed message to Paul Fleury. The clock only runs while you're actively typing — so every second counted is a second genuinely spent writing. When done, the message is delivered as a richly formatted email via [Resend](https://resend.com), with voice notes and files hosted in `/cache/` and linked directly inside the email.
+You sign up with your email, pick a handle, add your [Resend](https://resend.com) API key, set a PIN — and you're done. Messages land directly in your inbox, files and voice recordings included, all sent via your own Resend account.
 
-Zero npm. Zero build step. Three PHP files. One HTML file. Ships on any shared host in under five minutes.
+> **Live:** [howlr.to](https://howlr.to) · **Example:** [howlr.to/paulfxyz](https://howlr.to/paulfxyz)
+
+---
+
+## What it does
+
+| For message senders | For handle owners |
+|---|---|
+| Visit `howlr.to/yourfriend` | Claim `howlr.to/yourname` |
+| Compose on a distraction-free timed canvas | Receive messages in your own inbox |
+| Attach files or record a voice note | Messages delivered via your Resend key |
+| Hit send — that's it | Full control, no middleman |
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Architecture](#architecture)
+- [Project structure](#project-structure)
+- [Getting started (self-host)](#getting-started-self-host)
+- [API reference](#api-reference)
+- [Stack](#stack)
+- [Lessons learned](#lessons-learned)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
 
 ---
 
 ## Features
 
-| Feature | Details |
-|---|---|
-| **Timed writing** | Session timer runs only while `Start` is active; pauses on `Esc` |
-| **Voice recording** | In-browser MediaRecorder with live waveform visualiser (48-bar canvas) |
-| **File attachments** | Click-or-drag drop zone — 50 MB per file, 100 MB per send |
-| **Email delivery** | Server-side via Resend REST API — rich HTML + plain-text, SPF/DKIM signed |
-| **Settings modal** | Cog icon in topbar → Resend API key stored AES-256 encrypted on disk |
-| **PIN protection** | PBKDF2-SHA256 (100k iterations) + AES-256-CBC + HMAC verifier |
-| **Keyboard shortcuts** | Mac (`⌘↵`) and Windows/Linux (`Ctrl+↵`) — auto-detected at runtime |
-| **Success screen** | Stats recap + "Go to paulfleury.com" button |
-| **Serverless-ready** | Pure PHP 8.1 — no composer, no cron, no database |
-| **Auto cache cleanup** | Files older than 30 days deleted probabilistically (no cron needed) |
-| **i18n — 10 languages** | EN 🇬🇧 FR 🇫🇷 DE 🇩🇪 IT 🇮🇹 ES 🇪🇸 NL 🇳🇱 ZH 🇨🇳 HI 🇮🇳 JA 🇯🇵 RU 🇷🇺 — persisted in `localStorage` |
-| **Dark / Light / System theme** | Bulb icon in topbar; follows OS preference by default; persisted in `localStorage` |
+- **Magic-link auth** — no passwords, ever. Enter email → get link → you're in.
+- **Handle claiming** — `howlr.to/:handle` is yours forever. First come, first served.
+- **Timed canvas** — a live stopwatch reminds senders how long they've been writing.
+- **Voice recording** — record directly in the browser; audio delivered as a download link.
+- **File uploads** — drag-and-drop any file type; uploaded to the server and linked in the email.
+- **10 languages** — EN, FR, DE, IT, ES, NL, ZH, HI, JA, RU with auto-detection.
+- **Dark / light / system theme** — CSS custom properties, zero flicker.
+- **AES-256-CBC encryption** — your Resend API key is encrypted at rest with PBKDF2 key derivation.
+- **Per-user Resend** — messages go through your own Resend account. We see nothing.
+- **Keyboard shortcuts** — `⌘↵` / `Ctrl+Enter` to open send modal, `Space` to start timer, `Esc` to close modals.
+- **Fully open source** — MIT. Fork it, self-host it, extend it.
 
 ---
 
 ## Architecture
 
 ```
-to/
-├── index.html            ← Single-page app — all UI, state, and JS in one file
-├── send.php              ← Decrypts API key → sends email via Resend REST API
-├── upload.php            ← Multipart upload handler → stores files in /cache/
-├── settings.php          ← PIN-protected encrypted settings CRUD
-├── .htaccess             ← Blocks /config/ access, disables directory listing
-├── cache/                ← Temporary file storage (auto-purged after 30 days)
-│   └── index.html        ← 403 stub — prevents directory listing fallback
-└── config/
-    └── settings.enc.json ← AES-256 encrypted config (created on first save)
+┌─────────────────────────────────┐   CNAME    ┌────────────────────────┐
+│   howlr.to (SiteGround)         │ ─────────► │  api.howlr.to          │
+│                                 │            │  (Fly.io, Paris)        │
+│   landing/index.html            │            │                         │
+│   landing/auth/verify.html      │  REST API  │  Node.js / Express      │
+│   landing/handle/index.html     │ ◄────────► │  SQLite (WAL)           │
+│   .htaccess (mod_rewrite)       │            │  Fly persistent volume  │
+└─────────────────────────────────┘            └────────────────────────┘
+                                                         │
+                                               ┌─────────▼──────────┐
+                                               │   Resend API        │
+                                               │  (magic links +     │
+                                               │   user messages)    │
+                                               └─────────────────────┘
 ```
 
-All frontend logic lives in a single `index.html` — no bundler, no framework, no CDN dependencies beyond Google Fonts. The PHP layer is intentionally minimal: three focused files, each with a single responsibility.
+**Routing (Apache .htaccess):**
+- `/` → landing page
+- `/auth/verify` → magic-link verification + onboarding
+- `/:handle` → canvas for that handle (served from `handle/index.html`)
+
+**Backend routes (Fly.io):**
+- `POST /api/auth/magic-link` — request login email
+- `GET  /api/auth/verify/:token` — consume magic link, create session
+- `POST /api/auth/logout`
+- `GET  /api/me` — authenticated profile
+- `POST /api/handle/check` — availability check
+- `POST /api/handle/claim` — claim handle during onboarding
+- `POST /api/settings` — update Resend key (PIN required)
+- `POST /api/settings/change-pin`
+- `GET  /api/profile/:handle` — public profile (for canvas)
+- `POST /api/send/:handle` — send a message to a handle owner
+- `POST /api/upload/:handle` — upload file or audio
 
 ---
 
-## Security model
-
-The Resend API key is **never stored in plaintext**. Full encryption chain:
+## Project structure
 
 ```
-PIN (user input)
-  │
-  ▼  PBKDF2-SHA256 · 100,000 iterations · static salt
-256-bit AES key
-  │
-  ├──▶  AES-256-CBC(apiKey, key, randomIV)  →  base64(IV ∥ ciphertext)  →  stored
-  │
-  └──▶  HMAC-SHA256("pin_verify_token", key)  →  stored alongside ciphertext
+howlr/
+├── backend/                  # Node.js/Express API (deploys to Fly.io)
+│   ├── server.js             # Express routes and middleware
+│   ├── db.js                 # SQLite schema and initialization
+│   ├── crypto.js             # AES-256-CBC helpers
+│   ├── mailer.js             # Resend email helpers (magic links + messages)
+│   ├── fly.toml              # Fly.io deployment configuration
+│   ├── package.json
+│   └── .env.example          # Environment variable template
+│
+├── landing/                  # Static frontend (deploys to howlr.to via FTP)
+│   ├── index.html            # Multi-language landing page
+│   ├── .htaccess             # Apache routing (handle → canvas)
+│   ├── auth/
+│   │   └── verify.html       # Magic-link verification + onboarding
+│   └── handle/
+│       └── index.html        # Per-handle canvas (adapted from v2.0.0)
+│
+├── index.html                # (legacy) Single-user canvas at to.paulfleury.com
+├── send.php                  # (legacy) PHP email handler
+├── upload.php                # (legacy) PHP file upload handler
+├── settings.php              # (legacy) PHP settings handler
+├── CHANGELOG.md
+├── INSTALL.md
+├── LICENSE
+└── README.md
 ```
-
-On every send:
-1. Browser submits PIN with the message payload
-2. Server derives the AES key via PBKDF2 (same parameters)
-3. Verifies PIN using `hash_equals()` against the stored HMAC (constant-time — no timing attacks)
-4. Decrypts the API key, calls Resend, discards key from memory
-5. PIN never persists in any server-side session
-
-**Why a static salt?** This is a single-tenant tool (one user, one config file). A static salt is acceptable because: the PIN provides the entropy variation; a per-record random salt would need to be stored in plaintext anyway; and 100k PBKDF2 iterations already make brute-force attacks expensive (~150 ms per guess on a shared host CPU).
 
 ---
 
-## Keyboard shortcuts
+## Getting started (self-host)
 
-| Action | macOS | Windows / Linux |
+### Prerequisites
+
+- Node.js 20+
+- A [Resend](https://resend.com) account with a verified domain
+- A [Fly.io](https://fly.io) account
+- A web host with Apache + PHP (for the static frontend, any CDN works too)
+
+### 1. Clone
+
+```bash
+git clone https://github.com/paulfxyz/howlr.git
+cd howlr
+```
+
+### 2. Backend
+
+```bash
+cd backend
+cp .env.example .env
+# Fill in ENCRYPTION_SECRET, PLATFORM_RESEND_KEY, PLATFORM_FROM_EMAIL, etc.
+npm install
+npm start
+```
+
+#### Deploy to Fly.io
+
+```bash
+# Install Fly CLI
+curl -L https://fly.io/install.sh | sh
+
+# Authenticate
+fly auth login
+
+# Create app (first time)
+fly launch --name howlr-api --region cdg
+
+# Create persistent volume for SQLite + uploads
+fly volumes create howlr_data --size 3 --region cdg
+
+# Set secrets
+fly secrets set ENCRYPTION_SECRET="$(openssl rand -hex 32)"
+fly secrets set PLATFORM_RESEND_KEY="re_yourkey"
+fly secrets set PLATFORM_FROM_EMAIL="howlr <you@yourdomain.com>"
+fly secrets set FRONTEND_URL="https://yourdomain.com"
+fly secrets set BASE_URL="https://api.yourdomain.com"
+
+# Deploy
+fly deploy
+```
+
+After deploying, note your app URL (e.g. `howlr-api.fly.dev`) and add a CNAME:
+```
+api.yourdomain.com → howlr-api.fly.dev
+```
+
+### 3. Frontend
+
+Update `API_BASE` in `landing/handle/index.html` and `landing/auth/verify.html` and `landing/index.html` to point to your backend.
+
+Upload `landing/` contents to your web host's document root via FTP.
+
+---
+
+## Stack
+
+| Component | Technology | Why |
 |---|---|---|
-| Start / Resume | `Space` | `Space` |
-| Pause | `Esc` | `Esc` |
-| Open send modal | `⌘ ↵` | `Ctrl ↵` |
-| Confirm send | `⌘ ↵` | `Ctrl ↵` |
-| Close modal | `Esc` | `Esc` |
-
-Platform is detected at runtime via `navigator.platform` / `navigator.userAgent`. Mac users see `⌘↵` in the UI; everyone else sees `Ctrl+↵`.
-
----
-
-## Email format
-
-Every message is sent **from** `to@up.paulfleury.com` → **to** `hello@paulfleury.com`:
-
-```
-┌─────────────────────────────────────┐
-│ Black header — sender name + eyebrow │
-├─────────────────────────────────────┤
-│ Grey stats bar — time · words · chars│
-├─────────────────────────────────────┤
-│ Reply-to (if provided)               │
-│ Message body (nl2br, HTML-escaped)   │
-│ 🎙️ Voice card — Listen/Download btn  │
-│ 📎 Files table — name · size · MIME  │
-├─────────────────────────────────────┤
-│ Footer — sent via to.paulfleury.com  │
-└─────────────────────────────────────┘
-```
-
-Full plain-text fallback included for accessibility and spam filter compatibility.
-
----
-
-## Tech stack
-
-| Layer | Choice | Why |
-|---|---|---|
-| Frontend | Vanilla HTML5 / CSS3 / ES2020 | No build step, zero dependencies, loads instantly |
-| Audio capture | Browser MediaRecorder API | Built-in, no library needed, outputs WebM natively |
-| Canvas waveform | HTML Canvas 2D API | 48-bar live visualiser, ~20 lines of code |
-| Backend | PHP 8.1+ | Ships on every shared host, `openssl` + `curl` always available |
-| Email | Resend REST API | HTTPS port 443 (never blocked), auto SPF/DKIM, free tier generous |
-| Encryption | AES-256-CBC + PBKDF2 | PHP `openssl_*` built-in, no library required |
-| Fonts | Playfair Display + Lora (Google Fonts) | Editorial serif feel, loaded via CDN |
-| Hosting | SiteGround / any cPanel host | FTP deploy, no server configuration needed |
+| Backend | Node.js 20 + Express | Lightweight, fast, great ecosystem |
+| Database | SQLite + better-sqlite3 | Zero config, synchronous, Fly.io volume |
+| Auth | Magic links via Resend | No password management, frictionless UX |
+| Encryption | AES-256-CBC + PBKDF2 | Industry standard for at-rest key storage |
+| PIN hashing | bcrypt (12 rounds) | Standard for credential storage |
+| Email | Resend REST API | Dead simple, reliable, excellent deliverability |
+| File uploads | Multer | Best-in-class multipart handling for Express |
+| Rate limiting | express-rate-limit | Prevents brute force and spam |
+| Security headers | helmet | One-liner for essential HTTP headers |
+| Frontend | Vanilla HTML/CSS/JS | No build step, no dependencies, instant deploy |
+| Fonts | Cabinet Grotesk + Satoshi (Fontshare) | Distinctive, refined, free |
+| Backend hosting | Fly.io | Free tier, EU region, persistent volumes |
+| Frontend hosting | SiteGround (Apache) | Paul's existing hosting, mod_rewrite routing |
 
 ---
 
 ## Lessons learned
 
-This is a small project, but it surface-tested a surprising number of sharp edges. Documented here so the next deployment is painless.
+These are real issues encountered during the development of this project across v1.0.0 → v3.0.0.
 
-### 1. Browser MediaRecorder blobs confuse PHP's finfo
+### 1. Resend `reply_to` must be omitted if not a valid email
+Resend's API rejects the `reply_to` field if it's not a valid email address. The contact field accepts any freeform text (Telegram handle, phone number, etc.) — so we check the value with a regex before including `reply_to` in the payload.
 
-**Problem:** `finfo::file()` reads magic bytes to identify MIME types. Browser-recorded audio blobs (WebM from MediaRecorder) often don't start with a recognisable magic sequence — finfo reports them as `application/octet-stream`, which is on the block-list.
+### 2. `finfo` misidentifies WebM blobs as `application/octet-stream`
+The PHP `finfo` extension fails to detect the MIME type of WebM audio blobs recorded in the browser. The fix: fall back to the browser-reported MIME type for `audio/*` content types.
 
-**Solution:** When finfo returns `application/octet-stream` but the browser-supplied `Content-Type` header says `audio/*`, trust the browser. The worst case of this relaxation is a corrupt audio file that won't play — not a security issue.
+### 3. Resend FROM address must be on a verified domain
+The `from` field must be an address on a domain you've verified in your Resend dashboard. Sending from an unverified domain silently fails or returns a 403. For howlr.to, the platform key uses `to@up.paulfleury.com`.
 
-**Lesson:** Server-side MIME validation via magic bytes is more reliable than trusting `$_FILES['type']` for most file types, but has known gaps for streaming media formats. Layer both checks.
+### 4. SiteGround FTP root ≠ web root
+The FTP root on SiteGround is one level above the public web root. You must `cd` into `howlr.to/public_html/` before uploading files.
 
----
+### 5. JSON parsing crashes on empty PHP responses
+If a PHP file exits without calling `jsonOut()`, the response body is empty. `JSON.parse('')` throws a SyntaxError. Always ensure every PHP code path calls `jsonOut()`.
 
-### 2. Resend rejects null reply_to
+### 6. `better-sqlite3` is synchronous
+Unlike most Node.js database drivers, `better-sqlite3` is entirely synchronous. Do not use it inside async code with `await` — use `.get()`, `.all()`, and `.run()` directly. The async/await overhead is not needed and can cause confusion.
 
-**Problem:** The initial implementation passed `'reply_to' => null` in the Resend API payload when the sender left the contact field empty. Resend validates the field strictly and returns a `400 Bad Request`: *"The email address needs to follow the email@example.com format."*
+### 7. Apache `.htaccess` rewrite order matters
+When routing `/:handle` to `handle/index.html`, the rule must appear after the static file / directory rules. Otherwise Apache rewrites the path to `index.html` even for existing files (CSS, images, etc.).
 
-**Solution:** Only include `reply_to` in the payload when a non-empty contact string is available. In PHP, simply omit the key from the array rather than setting it to null.
+### 8. sessionStorage vs localStorage in sandboxed environments
+Some hosting environments (iframes, browser extensions, certain CDNs) block `localStorage`. Using `sessionStorage` is more portable for short-lived auth tokens. The canvas and auth pages use `sessionStorage.setItem('howlr_session', token)`.
 
-**Lesson:** REST APIs frequently distinguish between a missing key and a null value — don't assume null is equivalent to omission. Always read the API's validation rules for optional fields.
+### 9. CORS must explicitly list origins
+Wildcard `*` CORS doesn't work with `Authorization` headers and credentials. The backend maintains an explicit allowlist of origins and validates the `Origin` header on every request.
 
----
+### 10. Building a SaaS by adapting a single-user app
+Retrofitting a hardcoded single-user canvas into a dynamic multi-user system requires careful surgery: replacing static strings with `data-i18n` keys that get overridden per-profile, replacing PHP calls with REST API calls, and injecting a bootstrap script that knows the handle before the page renders.
 
-### 3. Resend domain verification must match FROM address
+### 11. Fly.io free tier "stop on idle"
+Fly.io can stop machines that receive no traffic for a while. For a platform where users need instant response, set `auto_stop_machines = false` and `min_machines_running = 1` in `fly.toml`. This keeps the API warm at all times.
 
-**Problem:** The intuitive sender address `to@paulfleury.com` fails because Resend requires the FROM domain to be verified via DNS (DKIM + SPF records). `paulfleury.com` is not a verified Resend sending domain in this deployment — but `up.paulfleury.com` is.
-
-**Solution:** Use `to@up.paulfleury.com` as FROM_EMAIL. The email still arrives cleanly in Paul's inbox; the subdomain in the sender address is barely noticeable.
-
-**Lesson:** Transactional email services enforce domain ownership at the DNS level. Always verify your sending domain before writing a single line of code — and document which subdomain is verified so the next developer doesn't debug a cryptic "domain not verified" error.
-
----
-
-### 4. FTP root ≠ web root on SiteGround
-
-**Problem:** The FTP account root (`/`) maps to the hosting account home directory, not to any specific site's `public_html`. Uploading files to `/` populates the account root, not `to.paulfleury.com/public_html`. The files were "uploaded successfully" but the site didn't change.
-
-**Solution:** Always `cd to.paulfleury.com/public_html` before uploading. The correct target path on this host is `to.paulfleury.com/public_html/`.
-
-**Lesson:** On multi-domain shared hosting, the FTP root is the account home. Each domain lives under `<domain>/public_html/`. Confirm the directory structure with `ls` before bulk uploading — never assume.
+### 12. PBKDF2 is slow by design
+100,000 PBKDF2 iterations for key derivation adds ~100ms per settings save/load. This is intentional — it makes brute force attacks impractical. Don't "optimise" this away.
 
 ---
 
-### 5. HTML email layout: tables or nothing
+## Contributing
 
-**Problem:** Modern CSS (flexbox, grid, custom properties) is stripped or ignored by virtually all major email clients — Outlook uses Word's rendering engine, Apple Mail ignores many properties, Gmail strips `<style>` tags entirely.
-
-**Solution:** Table-based layout with 100% inline styles. Web-safe font stack (`Georgia, 'Times New Roman', serif`). No external images, no web fonts, no JavaScript. Every style attribute is duplicated inline where needed.
-
-**Lesson:** HTML email is a 2003-era technology living inside 2026 applications. Budget double the time you think you need for email templates. Test in [Litmus](https://litmus.com) or [Email on Acid](https://www.emailonacid.com) before shipping to production.
-
----
-
-### 6. Cron-free cache cleanup via probabilistic execution
-
-**Problem:** Shared hosting rarely allows cron jobs, but uploaded files need to expire after 30 days to prevent unbounded disk usage.
-
-**Solution:** On each upload request, generate a random number between 1 and 20. If it equals 1 (~5% probability), scan `/cache/` and delete any file older than 30 days. Over time — assuming at least a few sends per month — this provides consistent cleanup with zero infrastructure overhead.
-
-**Lesson:** For low-frequency maintenance tasks, probabilistic inline execution is a clean alternative to cron. The cleanup doesn't need to run on every request, or even on a precise schedule — "eventually" is fine for a cache.
-
----
-
-### 7. Static application salt is fine for single-tenant tools
-
-**Problem:** Most encryption tutorials insist on per-record random salts. For a single-user tool where the salt would need to be stored in plaintext anyway, a per-record salt adds complexity without meaningful security gain.
-
-**Solution:** Use a static application salt baked into the source code. The PIN provides the entropy variation between deployments (different users deploying this tool use different PINs). 100,000 PBKDF2 iterations still make brute-force expensive.
-
-**Lesson:** Match your security model to your threat model. A static salt is an acceptable trade-off for a single-tenant personal tool. It would be wrong for a multi-user SaaS product storing hundreds of keys.
-
----
-
-## Installation
-
-See [INSTALL.md](INSTALL.md) for the full setup guide.
-
-**Quick start:**
-```bash
-# 1. Upload all files to your web root via FTP
-#    Target: <domain>/public_html/ on SiteGround / cPanel hosts
-
-# 2. Make /cache/ writable
-chmod 755 cache/
-
-# 3. Open the page → click ⚙ → enter your Resend API key + a PIN
-#    FROM address must be on a Resend-verified domain
-
-# 4. Done — send your first message
-```
-
----
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for the full version history.
+PRs are welcome. Please:
+1. Open an issue first for large changes
+2. Keep the backend as thin as possible (storage + email, nothing else)
+3. Keep the frontend dependency-free (no npm, no bundler)
+4. Document your changes in CHANGELOG.md
 
 ---
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
-
----
-
-*Built by [Paul Fleury](https://paulfleury.com)*
+[MIT](LICENSE) — use it, fork it, ship it.
 
 ---
 
 ## Disclaimer
 
-This is 100% vibe coding.
+This project is **100% vibe coding**. I'm not a software engineer, an artist, or a coder. I'm a former hacker turned entrepreneur who has a very good relationship with AI and tools like Claude and Perplexity Computer. This codebase was built in a series of AI-assisted sessions. It works, it's reasonably secure, and it's open source — but approach it as the output of an enthusiastic human + AI collaboration, not a production-hardened software team. Use at your own risk, and please contribute improvements if you find them.
 
-I don't pretend to be a software engineer, an artist, or a professional coder. I'm a former hacker turned Internet entrepreneur who has developed a very good working relationship with AI — tools like [Claude](https://claude.ai) and [Perplexity Computer](https://perplexity.ai). I describe what I want, I iterate, I ship. The code works, the product is real, and that's what matters.
-
-If you're a "real" developer reading this and cringing at something — fair enough. PRs welcome.
+— [@paulfxyz](https://github.com/paulfxyz)

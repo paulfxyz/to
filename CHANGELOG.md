@@ -1,143 +1,132 @@
 # Changelog
 
-All notable changes to this project are documented in this file.
+All notable changes to this project are documented here.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+Versioning follows [Semantic Versioning](https://semver.org/).
 
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+---
+
+## [3.0.0] — 2026-04-04
+
+### 🚀 Major — Platform relaunch as howlr.to SaaS
+
+This is a full architectural evolution. The project was previously a single-user
+canvas (`to` / `to.paulfleury.com`). It is now a **free, open-source multi-user
+SaaS platform** where anyone can claim a handle at `howlr.to/:handle`.
+
+### Added
+- **Multi-user platform** — anyone can register at [howlr.to](https://howlr.to), claim a unique handle, and receive messages at `howlr.to/:handle`
+- **Node.js / Express backend** deployed on Fly.io (`api.howlr.to`)
+  - Magic-link email authentication (no passwords, ever)
+  - SQLite + better-sqlite3 for persistent storage (Fly.io volume)
+  - AES-256-CBC + PBKDF2 encryption of per-user Resend API keys
+  - bcrypt PIN hashing
+  - Rate limiting (express-rate-limit) on auth and send routes
+  - Multer for file/audio uploads → `/data/uploads/:handle/`
+  - `nodemailer` + Resend REST API for magic-link emails
+  - Full REST API: `/api/auth/*`, `/api/handle/*`, `/api/settings`, `/api/send/:handle`, `/api/upload/:handle`, `/api/profile/:handle`
+- **Multi-language landing page** (`howlr.to`) in 10 languages: EN, FR, DE, IT, ES, NL, ZH, HI, JA, RU
+  - Language auto-detection from browser
+  - Manual language picker modal
+  - Dark / light theme toggle (system default)
+  - Cabinet Grotesk + Satoshi font pairing
+  - Animated handle demo typewriter
+  - Live preview timer simulation
+  - Signup form that calls the magic-link API
+- **Auth verify page** (`howlr.to/auth/verify`) — handles magic link verification and new-user onboarding
+  - Live handle availability check (debounced)
+  - Resend key + from email + PIN collection
+  - Immediate redirect to canvas after claiming
+- **Per-handle canvas page** (`howlr.to/:handle`) — the full v2.0.0 canvas, adapted to:
+  - Load the handle owner's profile from `/api/profile/:handle` dynamically
+  - Replace all "Paul Fleury" references with the actual handle owner's name
+  - Route uploads and sends through the REST API
+  - Wire settings modal to REST endpoints with Bearer token auth
+  - Show a friendly 404 page if the handle doesn't exist
+- **Apache `.htaccess`** routing: `/` → landing, `/auth/verify` → auth, `/:handle` → canvas
+- **GitHub repo renamed** from `paulfxyz/to` → `paulfxyz/howlr`
+- **Fly.io deployment config** (`fly.toml`): Paris region, 256 MB shared CPU, persistent `/data` volume
+
+### Architecture
+| Layer | Tech |
+|---|---|
+| Backend | Node.js 20 + Express 4 on Fly.io |
+| Database | SQLite via better-sqlite3 (WAL mode) |
+| Auth | Magic links via Resend, sessions in SQLite |
+| Encryption | AES-256-CBC + PBKDF2-SHA256 (100k iterations) |
+| Email | Resend REST API (platform key for auth, per-user key for messages) |
+| File uploads | Multer → Fly.io persistent volume, served as static |
+| Frontend | Plain HTML/CSS/JS, no build step, deployed via FTP |
+| Routing | Apache mod_rewrite on SiteGround |
+| DNS | `api.howlr.to` CNAME → `howlr-api.fly.dev` |
+
+### Changed
+- Project renamed: **to** → **howlr**
+- Domain: `to.paulfleury.com` → `howlr.to`
+- The per-handle canvas is now fully dynamic (no hardcoded owner names)
 
 ---
 
 ## [2.0.0] — 2026-04-04
 
 ### Added
-- **i18n system** — Full internationalisation engine built into `index.html`:
-  - 10 languages: English 🇬🇧, French 🇫🇷, German 🇩🇪, Italian 🇮🇹, Spanish 🇪🇸, Dutch 🇳🇱, Chinese 🇨🇳, Hindi 🇮🇳, Japanese 🇯🇵, Russian 🇷🇺
-  - All UI strings keyed via a `T` translation object; `data-i18n` attributes on every element
-  - Active language persisted to `localStorage` (`to_lang`)
-  - Flag icon in topbar updates to reflect the active language
-- **Language picker modal** — flag icon (🌐) in topbar opens a 2-column grid of all supported languages; active language shows a ✓ badge
-- **Dark mode** — full CSS custom property overhaul:
-  - Light mode: existing warm-paper palette (`--bg: #fff`, `--fg: rgb(55,53,47)`)
-  - Dark mode: soft-dark palette (`--bg: rgb(25,25,23)`, `--fg: rgb(229,225,219)`)
-  - `[data-theme="dark"]` attribute set on `<html>` by JS
-  - Smooth 200ms transitions on all colour changes
-  - Voice waveform canvas background adapts to active theme
-- **Theme picker modal** — bulb icon (💡) in topbar opens a modal with three choices: Light, Dark, System (follows OS `prefers-color-scheme`)
-  - OS-level dark/light changes detected in real time via `matchMedia` listener when System is selected
-  - Active theme persisted to `localStorage` (`to_theme`)
-- New topbar icon cluster: theme bulb → language flag → settings cog (all using shared `.topbar-btn` style)
-- `color-scheme` CSS property applied per theme for native scroll bars and form element styling
-- Keyboard shortcut `Esc` now also closes language and theme modals
+- **Full i18n system** — 10 languages: English, French, German, Italian, Spanish, Dutch, Chinese, Hindi, Japanese, Russian
+- **Language picker modal** — flag icon in top-right opens a grid of 10 language options with auto-detection from browser locale
+- **Dark / light / system theme** — bulb icon in top-right opens theme picker modal; CSS custom properties for all colours; `data-theme` attribute on `<html>`
+- **Welcome modal flag strip** — compact flag row added to welcome card for immediate language switching
 
 ### Changed
-- All hardcoded colour values (`#000`, `#fff`, `rgba(0,0,0,.x)`) replaced with CSS custom properties throughout CSS, enabling seamless dark mode
-- `updateState()` now calls `applyTranslations()` so state labels (Idle / Running / Paused) update immediately when language changes
-- `start()`, `pause()`, `reset()` calls `applyTranslations()` to keep dynamic UI strings (textarea placeholder, mobile toggle label) in sync with current language
-- Toast messages now use translated strings from `T[currentLang]`
-- Word/character counter pluralisation now resolves via `t('word')` / `t('words')` per language
-- Sidebar footer, welcome modal, send modal, error modal — all fully translated
-- Settings modal CSS converted to CSS variables (was partially hardcoded)
-- Theme initialisation runs before first paint to avoid flash of wrong theme
+- All CSS colours converted to `--custom-properties` with full dark/light variants
+- All UI text extracted into `STRINGS[lang]` i18n map
 
 ---
 
 ## [1.2.2] — 2026-04-04
 
 ### Fixed
-- `reply_to` field now only sent to Resend when the contact input is a valid email address. Freeform text (Telegram handle, phone, URL, etc.) is accepted in the contact field and included in the email body — Resend never sees it as `reply_to`, preventing the validation error.
+- `reply_to` validation: contact field now accepts any freeform text; `reply_to` only sent to Resend if value is a valid email address (Resend rejected non-email `reply_to` values)
 
 ---
 
-## [1.2.1] — 2026-04-03
-
-### Fixed
-- Topbar and page title updated from "Message to Paul Fleury" to "Send a message to Paul Fleury"
-
----
-
-## [1.2.0] — 2026-04-03
-
-### Added
-- Deep inline documentation across all three PHP files (`settings.php`, `upload.php`, `send.php`):
-  - File-level docblocks explaining design rationale, security model, and flow
-  - Per-function PHPDoc with `@param` / `@return` types
-  - Inline comments on every non-obvious decision
-  - Named constants with explanatory comments (`CONFIG_FILE`, `CIPHER`, `RESEND_API_URL`, etc.)
-- "Lessons learned" section in README covering 7 real issues encountered during development:
-  1. Browser MediaRecorder blobs confuse PHP `finfo`
-  2. Resend rejects `null` `reply_to` (vs. omitting the key)
-  3. Resend domain verification must match the FROM address
-  4. FTP root ≠ web root on SiteGround multi-domain hosting
-  5. HTML email layout requires tables, not modern CSS
-  6. Cron-free cache cleanup via probabilistic execution
-  7. Static salt is acceptable for single-tenant encryption
-- Tech stack table in README with rationale column for each choice
-- Email layout ASCII diagram in README
+## [1.2.1] — 2026-04-04
 
 ### Changed
-- README version badge bumped to `1.2.0`
-- `send.php`: extracted `RESEND_API_URL` and `CURL_TIMEOUT` as named constants
-- `send.php`: `reply_to` now omitted entirely from Resend payload when no contact provided (previously sent as `null`, which caused a Resend 400 error)
-- `settings.php`: extracted `PIN_SENTINEL` and `PIN_MIN_LEN` as named constants; `pinHmac()` helper extracted for reuse
+- Page title and topbar renamed: "Message to Paul Fleury" → "Send a message to Paul Fleury"
 
 ---
 
-## [1.1.0] — 2026-04-03
+## [1.2.0] — 2026-04-04
 
 ### Added
-- README badges: version, license, PHP version, Resend, live URL, no-dependencies
-- Quick-start section in README
-- Architecture diagram updated to include `.htaccess`
-- `INSTALL.md` reference added to README
-
-### Changed
-- README rewritten with badges, improved prose, and tighter structure
-- Version bumped to `1.1.0` across all files
+- Deep documentation pass on all PHP files (`send.php`, `upload.php`, `settings.php`)
+- README expanded with detailed lessons learned, tech stack table, bottlenecks, solutions
 
 ---
 
-## [1.0.0] — 2026-04-03
+## [1.1.0] — 2026-04-04
 
 ### Added
+- README badges (version, license, PHP version)
+- Quick-start / INSTALL.md guide
+- Improved README structure (ToC, sections)
 
-- Initial release of **To** — a timed, personal message canvas for `to.paulfleury.com`
-- Timed writing session with Start / Pause / Resume / Reset controls
-- Session state machine: `idle → running → paused → ready`
-- Live word and character count in the writing footer
-- **Voice recording** via browser MediaRecorder API with:
-  - Live waveform visualiser (canvas, 48 bars)
-  - Record / Stop / Play / Discard / Attach flow
-  - Audio attached as `voice_message_<timestamp>.webm`
-- **File attachments** — click-or-drag drop zone with:
-  - MIME type detection and icon mapping
-  - Per-file size display
-  - Multi-file support (up to 50 MB per file, 100 MB total)
-  - Remove individual files before sending
-- **Settings modal** (⚙ cog in topbar):
-  - Resend API key input with PIN protection
-  - AES-256-CBC encryption via PBKDF2-SHA256 (100k iterations)
-  - PIN verification without full decryption (HMAC-SHA256 verifier)
-  - Change PIN flow with re-encryption
-  - Tab interface: API Key / Change PIN
-- **Send flow** (`send.php`):
-  - Uploads audio and files to `/cache/` first via `upload.php`
-  - Sends rich HTML + plain-text email via Resend REST API
-  - Email from `to@up.paulfleury.com` → `hello@paulfleury.com`
-  - Includes writing stats, full message, voice download button, and file list
-- **Upload handler** (`upload.php`):
-  - Multipart file upload with MIME validation via `finfo`
-  - Random filename prefix to prevent collisions
-  - Auto-cleanup of cache files older than 30 days (5% chance per request)
-  - Directory listing blocked via `cache/index.html`
-- **Success modal** with writing stats recap and **"Go to paulfleury.com"** button
-- **Error modal** with retry button
-- **Sending progress** spinner while uploading and emailing
-- **Keyboard shortcuts** — platform-aware (Mac vs Windows/Linux):
-  - `Space` — Start / Resume
-  - `Esc` — Pause / Close modal
-  - `⌘↵` / `Ctrl+↵` — Open send modal / confirm send
-- Topbar simplified — removed "Workspace /" breadcrumb prefix
-- Welcome screen with 3-step onboarding
-- Mobile bottom bar (visible on screens ≤768px)
-- Toast notification system
-- Responsive layout — sidebar hidden on mobile, replaced by bottom bar
-- `.htaccess` — blocks directory listing, protects `/config/`, sets PHP upload limits
+---
+
+## [1.0.0] — 2026-04-04
+
+### Added
+- Initial release: personal message canvas at `to.paulfleury.com`
+- `index.html` — Notion-inspired fullscreen canvas with:
+  - Stopwatch timer (start/pause/reset)
+  - Rich textarea with word/character count
+  - Voice recording (MediaRecorder API, WebM)
+  - File drag-and-drop upload
+  - Send modal (Resend API via PHP backend)
+  - Settings modal (AES-256-CBC + PBKDF2, PIN protection)
+  - Keyboard shortcuts (⌘↵ to send, Space to start, Esc to close)
+- `send.php` — decrypts API key, builds HTML+text email, calls Resend REST API via cURL
+- `upload.php` — multipart upload to `/cache/`, probabilistic 30-day cleanup
+- `settings.php` — AES-256-CBC + PBKDF2-SHA256 encryption of Resend key; PIN hashing; JSON settings file
+- `.htaccess` — security headers, PHP error suppression
+- GitHub repository created: `paulfxyz/to` (public)
+- FTP deployed to `to.paulfleury.com`

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifying your link — howlr</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>🐺</text></svg>">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&f[]=satoshi@400,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0d0d0d;
+      --surface:  #141414;
+      --border:   #2a2a2a;
+      --text:     #e8e8e6;
+      --muted:    #888886;
+      --accent:   #ff6b35;
+      --error:    #e05252;
+      --success:  #52c07a;
+      --font-d:   'Cabinet Grotesk', sans-serif;
+      --font-b:   'Satoshi', sans-serif;
+    }
+    [data-theme="light"] {
+      --bg: #fafaf8; --surface: #fff; --border: #e5e5e0;
+      --text: #1a1a18; --muted: #6b6b68;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-b);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    .wolf { font-size: 48px; margin-bottom: 20px; display: block; }
+    h1 {
+      font-family: var(--font-d);
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    p { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status { font-size: 14px; color: var(--muted); margin-top: 8px; }
+    .error-msg { color: var(--error); font-size: 15px; margin-top: 12px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 28px;
+      border-radius: 99px;
+      font-family: var(--font-b);
+      font-size: 15px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: background 180ms;
+    }
+    .btn:hover { background: #ff8555; }
+    /* Onboarding form */
+    .onboarding { display: none; text-align: left; }
+    .onboarding.show { display: block; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 180ms;
+    }
+    input:focus { border-color: var(--accent); }
+    .handle-row { display: flex; align-items: center; gap: 0; }
+    .handle-prefix {
+      padding: 12px 0 12px 16px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-right: none;
+      border-radius: 12px 0 0 12px;
+      color: var(--muted);
+      font-size: 15px;
+      white-space: nowrap;
+    }
+    .handle-row input {
+      border-radius: 0 12px 12px 0;
+      border-left: none;
+    }
+    .handle-row input:focus { border-color: var(--accent); }
+    .handle-row input:focus + * { border-color: var(--accent); }
+    .avail-msg { font-size: 12px; margin-top: 6px; min-height: 18px; }
+    .avail-ok   { color: var(--success); }
+    .avail-err  { color: var(--error); }
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-b);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 180ms;
+    }
+    .submit-btn:hover { background: #ff8555; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-err { color: var(--error); font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+    .form-err.show { display: block; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <!-- Verifying state -->
+  <div id="verifying">
+    <span class="wolf">🐺</span>
+    <h1>Verifying your link…</h1>
+    <p>Just a moment while we log you in.</p>
+    <div class="spinner"></div>
+    <div class="status" id="statusMsg">Checking token…</div>
+  </div>
+
+  <!-- Error state -->
+  <div id="errState" style="display:none">
+    <span class="wolf">😵</span>
+    <h1>Link expired</h1>
+    <p>This login link has expired or already been used. Links are valid for 15 minutes.</p>
+    <a href="/" class="btn">Request a new link</a>
+  </div>
+
+  <!-- Onboarding: new user needs to pick a handle -->
+  <div id="onboarding" style="display:none">
+    <span class="wolf" style="text-align:center;display:block">🎉</span>
+    <h1 style="text-align:center">Welcome to howlr!</h1>
+    <p style="text-align:center;margin-bottom:28px">Set up your personal canvas in under a minute.</p>
+
+    <form id="onboardForm">
+      <div class="form-group">
+        <label for="handleInput">Your handle</label>
+        <div class="handle-row">
+          <span class="handle-prefix">howlr.to/</span>
+          <input type="text" id="handleInput" placeholder="yourname"
+                 pattern="[a-zA-Z0-9_-]{2,30}" maxlength="30" autocomplete="off" required>
+        </div>
+        <div class="avail-msg" id="availMsg"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="resendKey">Resend API key</label>
+        <input type="password" id="resendKey" placeholder="re_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+        <div style="font-size:12px;color:var(--muted);margin-top:5px">
+          Get one free at <a href="https://resend.com" target="_blank" style="color:var(--accent)">resend.com</a>. You can add this later.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fromEmail">From email address</label>
+        <input type="email" id="fromEmail" placeholder="you@yourdomain.com" autocomplete="email">
+        <div style="font-size:12px;color:var(--muted);margin-top:5px">Must be on a domain verified in your Resend account.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="pinInput">Security PIN (4-8 digits)</label>
+        <input type="password" id="pinInput" placeholder="••••" maxlength="8"
+               pattern="[0-9]{4,8}" inputmode="numeric" autocomplete="new-password">
+        <div style="font-size:12px;color:var(--muted);margin-top:5px">Required to change settings later.</div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="claimBtn">Launch my canvas →</button>
+      <div class="form-err" id="formErr"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   howlr — auth/verify.html
+   1. Extracts ?token= from URL
+   2. Calls GET /api/auth/verify/:token
+   3a. Existing user → saves session, redirects to /handle
+   3b. New user → shows onboarding form (handle, Resend key, PIN)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const API = 'https://api.howlr.to';
+const $ = id => document.getElementById(id);
+
+// ── 1. Extract token ─────────────────────────────────────────────────────────
+
+const params = new URLSearchParams(location.search);
+const token  = params.get('token');
+
+if (!token) {
+  showError();
+} else {
+  verifyToken(token);
+}
+
+// ── 2. Verify token ──────────────────────────────────────────────────────────
+
+async function verifyToken(tok) {
+  $('statusMsg').textContent = 'Verifying…';
+  try {
+    const res  = await fetch(`${API}/api/auth/verify/${tok}`);
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) { showError(); return; }
+
+    // Store session token in sessionStorage (no localStorage — sandboxed envs block it)
+    sessionStorage.setItem('howlr_session', data.session_token);
+
+    if (!data.is_new_user && data.user?.handle) {
+      // Existing user — redirect to their canvas
+      $('statusMsg').textContent = 'Welcome back! Redirecting…';
+      setTimeout(() => {
+        location.href = `/${data.user.handle}`;
+      }, 600);
+    } else {
+      // New user — show onboarding
+      $('verifying').style.display = 'none';
+      $('onboarding').style.display = 'block';
+      setupOnboarding(data.session_token);
+    }
+  } catch (err) {
+    console.error('Verify error:', err);
+    showError();
+  }
+}
+
+function showError() {
+  $('verifying').style.display = 'none';
+  $('errState').style.display  = 'block';
+}
+
+// ── 3. Onboarding ────────────────────────────────────────────────────────────
+
+function setupOnboarding(sessionToken) {
+  const handleInput = $('handleInput');
+  let   checkTimer  = null;
+  let   handleOk    = false;
+
+  // Live handle availability check (debounced)
+  handleInput.addEventListener('input', () => {
+    clearTimeout(checkTimer);
+    const h = handleInput.value.trim();
+    $('availMsg').textContent = '';
+    $('availMsg').className   = 'avail-msg';
+    handleOk = false;
+
+    if (h.length < 2) return;
+
+    checkTimer = setTimeout(async () => {
+      try {
+        const res  = await fetch(`${API}/api/handle/check`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ handle: h }),
+        });
+        const data = await res.json();
+        if (data.available) {
+          $('availMsg').textContent = `✓ ${h} is available!`;
+          $('availMsg').className   = 'avail-msg avail-ok';
+          handleOk = true;
+        } else {
+          $('availMsg').textContent = data.reason || `✗ ${h} is already taken`;
+          $('availMsg').className   = 'avail-msg avail-err';
+          handleOk = false;
+        }
+      } catch {}
+    }, 450);
+  });
+
+  // Form submission
+  $('onboardForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('claimBtn');
+    const err = $('formErr');
+    err.className = 'form-err';
+
+    const handle    = handleInput.value.trim();
+    const resendKey = $('resendKey').value.trim();
+    const fromEmail = $('fromEmail').value.trim();
+    const pin       = $('pinInput').value.trim();
+
+    if (!handle)           { showFormErr('Please choose a handle.'); return; }
+    if (!handleOk)         { showFormErr('That handle is not available.'); return; }
+    if (!pin || pin.length < 4) { showFormErr('PIN must be at least 4 digits.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Claiming…';
+
+    try {
+      const res  = await fetch(`${API}/api/handle/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ handle, resend_key: resendKey || undefined, from_email: fromEmail || undefined, pin }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        btn.textContent = '🎉 Launching…';
+        setTimeout(() => { location.href = `/${handle}`; }, 500);
+      } else {
+        showFormErr(data.error || 'Something went wrong.');
+        btn.disabled = false;
+        btn.textContent = 'Launch my canvas →';
+      }
+    } catch {
+      showFormErr('Network error. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Launch my canvas →';
+    }
+  });
+
+  function showFormErr(msg) {
+    $('formErr').textContent = msg;
+    $('formErr').className   = 'form-err show';
+  }
+}
+
+// ── Theme ────────────────────────────────────────────────────────────────────
+(function() {
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+})();
+</script>
+</body>
+</html>
