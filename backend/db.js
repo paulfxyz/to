@@ -1,5 +1,5 @@
 /**
- * db.js — SQLite database initialisation for howlr.to
+ * db.js — SQLite database initialisation for hollr.to
  *
  * Schema overview
  * ───────────────
@@ -7,7 +7,7 @@
  * magic_links    — one-time login tokens (expire after 15 min)
  * sessions       — authenticated sessions (expire after 30 days)
  *
- * The database file lives at DATA_DIR/howlr.db (configurable via env).
+ * The database file lives at DATA_DIR/hollr.db (configurable via env).
  * On Fly.io, DATA_DIR should point to a persistent volume, e.g. /data.
  */
 
@@ -18,7 +18,7 @@ const fs       = require('fs');
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const db = new Database(path.join(DATA_DIR, 'howlr.db'));
+const db = new Database(path.join(DATA_DIR, 'hollr.db'));
 
 // Enable WAL mode for better concurrent read performance
 db.pragma('journal_mode = WAL');

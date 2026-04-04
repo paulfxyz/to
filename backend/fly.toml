@@ -1,7 +1,7 @@
-# fly.toml — Fly.io deployment config for howlr.to API
-# App name: howlr-api | Region: cdg (Paris)
+# fly.toml — Fly.io deployment config for hollr.to API
+# App name: hollr-api | Region: cdg (Paris)
 
-app = "howlr-api"
+app = "hollr-api"
 primary_region = "cdg"
 
 [build]
@@ -24,7 +24,7 @@ primary_region = "cdg"
     soft_limit = 200
 
 [[mounts]]
-  source      = "howlr_data"
+  source      = "hollr_data"
   destination = "/data"
 
 [[vm]]

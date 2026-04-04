@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verifying your link — howlr</title>
+  <title>Verifying your link — hollr</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>🐺</text></svg>">
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&f[]=satoshi@400,500&display=swap" rel="stylesheet">
   <style>
@@ -159,14 +159,14 @@
   <!-- Onboarding: new user needs to pick a handle -->
   <div id="onboarding" style="display:none">
     <span class="wolf" style="text-align:center;display:block">🎉</span>
-    <h1 style="text-align:center">Welcome to howlr!</h1>
+    <h1 style="text-align:center">Welcome to hollr!</h1>
     <p style="text-align:center;margin-bottom:28px">Set up your personal canvas in under a minute.</p>
 
     <form id="onboardForm">
       <div class="form-group">
         <label for="handleInput">Your handle</label>
         <div class="handle-row">
-          <span class="handle-prefix">howlr.to/</span>
+          <span class="handle-prefix">hollr.to/</span>
           <input type="text" id="handleInput" placeholder="yourname"
                  pattern="[a-zA-Z0-9_-]{2,30}" maxlength="30" autocomplete="off" required>
         </div>
@@ -202,14 +202,14 @@
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════════
-   howlr — auth/verify.html
+   hollr — auth/verify.html
    1. Extracts ?token= from URL
    2. Calls GET /api/auth/verify/:token
    3a. Existing user → saves session, redirects to /handle
    3b. New user → shows onboarding form (handle, Resend key, PIN)
    ══════════════════════════════════════════════════════════════════════════ */
 
-const API = 'https://api.howlr.to';
+const API = 'https://api.hollr.to';
 const $ = id => document.getElementById(id);
 
 // ── 1. Extract token ─────────────────────────────────────────────────────────
@@ -234,7 +234,7 @@ async function verifyToken(tok) {
     if (!res.ok || !data.ok) { showError(); return; }
 
     // Store session token in sessionStorage (no localStorage — sandboxed envs block it)
-    sessionStorage.setItem('howlr_session', data.session_token);
+    sessionStorage.setItem('hollr_session', data.session_token);
 
     if (!data.is_new_user && data.user?.handle) {
       // Existing user — redirect to their canvas

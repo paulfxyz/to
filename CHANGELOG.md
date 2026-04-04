@@ -8,15 +8,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [3.0.0] — 2026-04-04
 
-### 🚀 Major — Platform relaunch as howlr.to SaaS
+### 🚀 Major — Platform relaunch as hollr.to SaaS
 
 This is a full architectural evolution. The project was previously a single-user
 canvas (`to` / `to.paulfleury.com`). It is now a **free, open-source multi-user
-SaaS platform** where anyone can claim a handle at `howlr.to/:handle`.
+SaaS platform** where anyone can claim a handle at `hollr.to/:handle`.
 
 ### Added
-- **Multi-user platform** — anyone can register at [howlr.to](https://howlr.to), claim a unique handle, and receive messages at `howlr.to/:handle`
-- **Node.js / Express backend** deployed on Fly.io (`api.howlr.to`)
+- **Multi-user platform** — anyone can register at [hollr.to](https://hollr.to), claim a unique handle, and receive messages at `hollr.to/:handle`
+- **Node.js / Express backend** deployed on Fly.io (`api.hollr.to`)
   - Magic-link email authentication (no passwords, ever)
   - SQLite + better-sqlite3 for persistent storage (Fly.io volume)
   - AES-256-CBC + PBKDF2 encryption of per-user Resend API keys
@@ -25,7 +25,7 @@ SaaS platform** where anyone can claim a handle at `howlr.to/:handle`.
   - Multer for file/audio uploads → `/data/uploads/:handle/`
   - `nodemailer` + Resend REST API for magic-link emails
   - Full REST API: `/api/auth/*`, `/api/handle/*`, `/api/settings`, `/api/send/:handle`, `/api/upload/:handle`, `/api/profile/:handle`
-- **Multi-language landing page** (`howlr.to`) in 10 languages: EN, FR, DE, IT, ES, NL, ZH, HI, JA, RU
+- **Multi-language landing page** (`hollr.to`) in 10 languages: EN, FR, DE, IT, ES, NL, ZH, HI, JA, RU
   - Language auto-detection from browser
   - Manual language picker modal
   - Dark / light theme toggle (system default)
@@ -33,18 +33,18 @@ SaaS platform** where anyone can claim a handle at `howlr.to/:handle`.
   - Animated handle demo typewriter
   - Live preview timer simulation
   - Signup form that calls the magic-link API
-- **Auth verify page** (`howlr.to/auth/verify`) — handles magic link verification and new-user onboarding
+- **Auth verify page** (`hollr.to/auth/verify`) — handles magic link verification and new-user onboarding
   - Live handle availability check (debounced)
   - Resend key + from email + PIN collection
   - Immediate redirect to canvas after claiming
-- **Per-handle canvas page** (`howlr.to/:handle`) — the full v2.0.0 canvas, adapted to:
+- **Per-handle canvas page** (`hollr.to/:handle`) — the full v2.0.0 canvas, adapted to:
   - Load the handle owner's profile from `/api/profile/:handle` dynamically
   - Replace all "Paul Fleury" references with the actual handle owner's name
   - Route uploads and sends through the REST API
   - Wire settings modal to REST endpoints with Bearer token auth
   - Show a friendly 404 page if the handle doesn't exist
 - **Apache `.htaccess`** routing: `/` → landing, `/auth/verify` → auth, `/:handle` → canvas
-- **GitHub repo renamed** from `paulfxyz/to` → `paulfxyz/howlr`
+- **GitHub repo renamed** from `paulfxyz/to` → `paulfxyz/hollr`
 - **Fly.io deployment config** (`fly.toml`): Paris region, 256 MB shared CPU, persistent `/data` volume
 
 ### Architecture
@@ -58,11 +58,11 @@ SaaS platform** where anyone can claim a handle at `howlr.to/:handle`.
 | File uploads | Multer → Fly.io persistent volume, served as static |
 | Frontend | Plain HTML/CSS/JS, no build step, deployed via FTP |
 | Routing | Apache mod_rewrite on SiteGround |
-| DNS | `api.howlr.to` CNAME → `howlr-api.fly.dev` |
+| DNS | `api.hollr.to` CNAME → `hollr-api.fly.dev` |
 
 ### Changed
-- Project renamed: **to** → **howlr**
-- Domain: `to.paulfleury.com` → `howlr.to`
+- Project renamed: **to** → **hollr**
+- Domain: `to.paulfleury.com` → `hollr.to`
 - The per-handle canvas is now fully dynamic (no hardcoded owner names)
 
 ---

@@ -1,4 +1,4 @@
-# howlr.to — Apache routing rules for SiteGround
+# hollr.to — Apache routing rules for SiteGround
 #
 # Routing strategy:
 #   /                     → index.html  (landing page)
@@ -6,7 +6,7 @@
 #   /auth/verify.html     → auth/verify.html (direct access)
 #   /:handle              → handle/index.html (the canvas for that handle)
 #
-# API calls go to api.howlr.to (separate Fly.io backend via CNAME).
+# API calls go to api.hollr.to (separate Fly.io backend via CNAME).
 # Static assets (css, js, images) are served normally.
 
 Options -Indexes

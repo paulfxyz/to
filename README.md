@@ -1,16 +1,16 @@
 # 📯 hollr
 
-[![Version](https://img.shields.io/badge/version-3.0.0-ff6b35?style=flat-square)](https://github.com/paulfxyz/howlr/releases)
+[![Version](https://img.shields.io/badge/version-3.0.0-ff6b35?style=flat-square)](https://github.com/paulfxyz/hollr/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
 [![Node](https://img.shields.io/badge/node-20-green?style=flat-square)](https://nodejs.org)
 [![Fly.io](https://img.shields.io/badge/backend-Fly.io-6366f1?style=flat-square)](https://fly.io)
-[![Open Source](https://img.shields.io/badge/open_source-yes-orange?style=flat-square)](https://github.com/paulfxyz/howlr)
+[![Open Source](https://img.shields.io/badge/open_source-yes-orange?style=flat-square)](https://github.com/paulfxyz/hollr)
 
-**howlr** is a free, open-source SaaS platform where anyone can claim a personal handle and receive timed, distraction-free messages at `howlr.to/:handle`.
+**hollr** is a free, open-source SaaS platform where anyone can claim a personal handle and receive timed, distraction-free messages at `hollr.to/:handle`.
 
 You sign up with your email, pick a handle, add your [Resend](https://resend.com) API key, set a PIN — and you're done. Messages land directly in your inbox, files and voice recordings included, all sent via your own Resend account.
 
-> **Live:** [howlr.to](https://howlr.to) · **Example:** [howlr.to/paulfxyz](https://howlr.to/paulfxyz)
+> **Live:** [hollr.to](https://hollr.to) · **Example:** [hollr.to/paulfxyz](https://hollr.to/paulfxyz)
 
 ---
 
@@ -18,7 +18,7 @@ You sign up with your email, pick a handle, add your [Resend](https://resend.com
 
 | For message senders | For handle owners |
 |---|---|
-| Visit `howlr.to/yourfriend` | Claim `howlr.to/yourname` |
+| Visit `hollr.to/yourfriend` | Claim `hollr.to/yourname` |
 | Compose on a distraction-free timed canvas | Receive messages in your own inbox |
 | Attach files or record a voice note | Messages delivered via your Resend key |
 | Hit send — that's it | Full control, no middleman |
@@ -43,7 +43,7 @@ You sign up with your email, pick a handle, add your [Resend](https://resend.com
 ## Features
 
 - **Magic-link auth** — no passwords, ever. Enter email → get link → you're in.
-- **Handle claiming** — `howlr.to/:handle` is yours forever. First come, first served.
+- **Handle claiming** — `hollr.to/:handle` is yours forever. First come, first served.
 - **Timed canvas** — a live stopwatch reminds senders how long they've been writing.
 - **Voice recording** — record directly in the browser; audio delivered as a download link.
 - **File uploads** — drag-and-drop any file type; uploaded to the server and linked in the email.
@@ -60,7 +60,7 @@ You sign up with your email, pick a handle, add your [Resend](https://resend.com
 
 ```
 ┌─────────────────────────────────┐   CNAME    ┌────────────────────────┐
-│   howlr.to (SiteGround)         │ ─────────► │  api.howlr.to          │
+│   hollr.to (SiteGround)         │ ─────────► │  api.hollr.to          │
 │                                 │            │  (Fly.io, Paris)        │
 │   landing/index.html            │            │                         │
 │   landing/auth/verify.html      │  REST API  │  Node.js / Express      │
@@ -98,7 +98,7 @@ You sign up with your email, pick a handle, add your [Resend](https://resend.com
 ## Project structure
 
 ```
-howlr/
+hollr/
 ├── backend/                  # Node.js/Express API (deploys to Fly.io)
 │   ├── server.js             # Express routes and middleware
 │   ├── db.js                 # SQLite schema and initialization
@@ -108,7 +108,7 @@ howlr/
 │   ├── package.json
 │   └── .env.example          # Environment variable template
 │
-├── landing/                  # Static frontend (deploys to howlr.to via FTP)
+├── landing/                  # Static frontend (deploys to hollr.to via FTP)
 │   ├── index.html            # Multi-language landing page
 │   ├── .htaccess             # Apache routing (handle → canvas)
 │   ├── auth/
@@ -140,8 +140,8 @@ howlr/
 ### 1. Clone
 
 ```bash
-git clone https://github.com/paulfxyz/howlr.git
-cd howlr
+git clone https://github.com/paulfxyz/hollr.git
+cd hollr
 ```
 
 ### 2. Backend
@@ -164,15 +164,15 @@ curl -L https://fly.io/install.sh | sh
 fly auth login
 
 # Create app (first time)
-fly launch --name howlr-api --region cdg
+fly launch --name hollr-api --region cdg
 
 # Create persistent volume for SQLite + uploads
-fly volumes create howlr_data --size 3 --region cdg
+fly volumes create hollr_data --size 3 --region cdg
 
 # Set secrets
 fly secrets set ENCRYPTION_SECRET="$(openssl rand -hex 32)"
 fly secrets set PLATFORM_RESEND_KEY="re_yourkey"
-fly secrets set PLATFORM_FROM_EMAIL="howlr <you@yourdomain.com>"
+fly secrets set PLATFORM_FROM_EMAIL="hollr <you@yourdomain.com>"
 fly secrets set FRONTEND_URL="https://yourdomain.com"
 fly secrets set BASE_URL="https://api.yourdomain.com"
 
@@ -180,9 +180,9 @@ fly secrets set BASE_URL="https://api.yourdomain.com"
 fly deploy
 ```
 
-After deploying, note your app URL (e.g. `howlr-api.fly.dev`) and add a CNAME:
+After deploying, note your app URL (e.g. `hollr-api.fly.dev`) and add a CNAME:
 ```
-api.yourdomain.com → howlr-api.fly.dev
+api.yourdomain.com → hollr-api.fly.dev
 ```
 
 ### 3. Frontend
@@ -224,10 +224,10 @@ Resend's API rejects the `reply_to` field if it's not a valid email address. The
 The PHP `finfo` extension fails to detect the MIME type of WebM audio blobs recorded in the browser. The fix: fall back to the browser-reported MIME type for `audio/*` content types.
 
 ### 3. Resend FROM address must be on a verified domain
-The `from` field must be an address on a domain you've verified in your Resend dashboard. Sending from an unverified domain silently fails or returns a 403. For howlr.to, the platform key uses `to@up.paulfleury.com`.
+The `from` field must be an address on a domain you've verified in your Resend dashboard. Sending from an unverified domain silently fails or returns a 403. For hollr.to, the platform key uses `to@up.paulfleury.com`.
 
 ### 4. SiteGround FTP root ≠ web root
-The FTP root on SiteGround is one level above the public web root. You must `cd` into `howlr.to/public_html/` before uploading files.
+The FTP root on SiteGround is one level above the public web root. You must `cd` into `hollr.to/public_html/` before uploading files.
 
 ### 5. JSON parsing crashes on empty PHP responses
 If a PHP file exits without calling `jsonOut()`, the response body is empty. `JSON.parse('')` throws a SyntaxError. Always ensure every PHP code path calls `jsonOut()`.
@@ -239,7 +239,7 @@ Unlike most Node.js database drivers, `better-sqlite3` is entirely synchronous. 
 When routing `/:handle` to `handle/index.html`, the rule must appear after the static file / directory rules. Otherwise Apache rewrites the path to `index.html` even for existing files (CSS, images, etc.).
 
 ### 8. sessionStorage vs localStorage in sandboxed environments
-Some hosting environments (iframes, browser extensions, certain CDNs) block `localStorage`. Using `sessionStorage` is more portable for short-lived auth tokens. The canvas and auth pages use `sessionStorage.setItem('howlr_session', token)`.
+Some hosting environments (iframes, browser extensions, certain CDNs) block `localStorage`. Using `sessionStorage` is more portable for short-lived auth tokens. The canvas and auth pages use `sessionStorage.setItem('hollr_session', token)`.
 
 ### 9. CORS must explicitly list origins
 Wildcard `*` CORS doesn't work with `Authorization` headers and credentials. The backend maintains an explicit allowlist of origins and validates the `Origin` header on every request.

@@ -1,5 +1,5 @@
 /**
- * crypto.js — AES-256-CBC encryption helpers for howlr.to
+ * crypto.js — AES-256-CBC encryption helpers for hollr.to
  *
  * Used to encrypt/decrypt per-user Resend API keys at rest.
  * The server-side encryption secret lives in ENCRYPTION_SECRET env var.

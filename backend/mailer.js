@@ -1,5 +1,5 @@
 /**
- * mailer.js — Email delivery via Resend REST API for howlr.to
+ * mailer.js — Email delivery via Resend REST API for hollr.to
  *
  * Two responsibilities:
  *   1. Send magic-link login emails (uses the PLATFORM Resend key, i.e. Paul's key)
@@ -56,12 +56,12 @@ async function sendMagicLink(toEmail, magicLink) {
 
   const html = `
     <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:40px 24px">
-      <h1 style="font-size:28px;margin-bottom:8px;color:#111">🐺 howlr</h1>
+      <h1 style="font-size:28px;margin-bottom:8px;color:#111">🐺 hollr</h1>
       <p style="color:#555;margin-bottom:32px">Your secure, one-time login link</p>
       <a href="${magicLink}"
          style="display:inline-block;background:#111;color:#fff;padding:14px 28px;
                 border-radius:8px;text-decoration:none;font-weight:600;font-size:15px">
-        Log in to howlr →
+        Log in to hollr →
       </a>
       <p style="color:#999;font-size:13px;margin-top:32px">
         This link expires in 15 minutes and can only be used once.<br>
@@ -70,9 +70,9 @@ async function sendMagicLink(toEmail, magicLink) {
     </div>`;
 
   return resendPost(apiKey, {
-    from:    process.env.PLATFORM_FROM_EMAIL || 'howlr <hello@up.paulfleury.com>',
+    from:    process.env.PLATFORM_FROM_EMAIL || 'hollr <hello@up.paulfleury.com>',
     to:      [toEmail],
-    subject: 'Your howlr login link',
+    subject: 'Your hollr login link',
     html,
   });
 }
@@ -107,7 +107,7 @@ async function forwardMessage(opts) {
   const html = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:40px 24px">
       <h2 style="font-size:18px;color:#111;margin-bottom:4px">
-        ✉️ New message on howlr.to/${handle || ''}
+        ✉️ New message on hollr.to/${handle || ''}
       </h2>
       <p style="color:#777;font-size:13px;margin-bottom:24px">
         From: <strong>${senderContact}</strong>
@@ -120,14 +120,14 @@ async function forwardMessage(opts) {
       ${filesHtml}
       ${audioHtml}
       <p style="color:#bbb;font-size:12px;margin-top:40px">
-        Sent via <a href="https://howlr.to" style="color:#bbb">howlr.to</a>
+        Sent via <a href="https://hollr.to" style="color:#bbb">hollr.to</a>
       </p>
     </div>`;
 
   const payload = {
     from:    fromEmail,
     to:      [toEmail],
-    subject: `New message on howlr.to/${handle || ''}`,
+    subject: `New message on hollr.to/${handle || ''}`,
     html,
     text:    `New message from ${senderContact}:\n\n${message}${audioUrl ? '\n\nVoice: ' + audioUrl : ''}${fileUrls.length ? '\n\nFiles:\n' + fileUrls.join('\n') : ''}`,
   };

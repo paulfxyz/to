@@ -1,7 +1,7 @@
 {
-  "name": "howlr-backend",
+  "name": "hollr-backend",
   "version": "3.0.0",
-  "description": "howlr.to — open source SaaS messaging platform backend",
+  "description": "hollr.to — open source SaaS messaging platform backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

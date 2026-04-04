@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- ── howlr bootstrap ───────────────────────────────────────────────────
+  <!-- ── hollr bootstrap ───────────────────────────────────────────────────
        Extracts the handle from the URL path, loads the public profile from
        the API, and injects the owner's display name into all i18n strings.
        Falls back gracefully if the handle is not found (404 page).
@@ -9,17 +9,17 @@
   <script>
     // Determine handle from URL path: /paulfxyz → 'paulfxyz'
     var HANDLE   = location.pathname.replace(/^\/+/, '').split('/')[0] || 'unknown';
-    var API_BASE = 'https://api.howlr.to';
+    var API_BASE = 'https://api.hollr.to';
 
     // Inject handle into page title immediately (before fonts/styles load)
     document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('page-title').textContent = 'howlr.to/' + HANDLE;
+      document.getElementById('page-title').textContent = 'hollr.to/' + HANDLE;
     });
   </script>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title id='page-title'>howlr.to</title>
+  <title id='page-title'>hollr.to</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
@@ -2492,11 +2492,11 @@
    * ════════════════════════════════════════════════════════════════════════ */
 
   /* ════════════════════════════════════════════════════════════════════════
-   * HOWLR — Dynamic profile loading
+   * HOLLR — Dynamic profile loading
    * Fetches /api/profile/:handle to determine if this handle exists and is
    * configured. Updates all Paul-specific strings to show the handle owner.
    * ════════════════════════════════════════════════════════════════════════ */
-  async function loadHowlrProfile() {
+  async function loadHollrProfile() {
     try {
       const res  = await fetch(`${API_BASE}/api/profile/${HANDLE}`);
       if (!res.ok) {
@@ -2505,9 +2505,9 @@
           <div style="display:flex;align-items:center;justify-content:center;height:100vh;
                       font-family:sans-serif;flex-direction:column;gap:16px;color:#888">
             <div style="font-size:48px">🐺</div>
-            <h1 style="font-size:24px;color:#222;font-weight:700">howlr.to/${HANDLE}</h1>
+            <h1 style="font-size:24px;color:#222;font-weight:700">hollr.to/${HANDLE}</h1>
             <p style="max-width:320px;text-align:center">This handle hasn't been claimed yet.</p>
-            <a href="https://howlr.to" style="margin-top:8px;background:#ff6b35;color:#fff;
+            <a href="https://hollr.to" style="margin-top:8px;background:#ff6b35;color:#fff;
                padding:12px 24px;border-radius:99px;text-decoration:none;font-weight:600">
               Claim it →
             </a>
@@ -2524,39 +2524,39 @@
           if (typeof s[key] === 'string') {
             s[key] = s[key]
               .replace(/Paul Fleury/g, ownerDisplay)
-              .replace(/paulfleury\.com/g, `howlr.to/${profile.handle}`)
-              .replace(/go_to_paul_url/g, `https://howlr.to/${profile.handle}`);
+              .replace(/paulfleury\.com/g, `hollr.to/${profile.handle}`)
+              .replace(/go_to_paul_url/g, `https://hollr.to/${profile.handle}`);
           }
         }
       }
 
       // Update document title
-      document.title = `howlr.to/${profile.handle}`;
+      document.title = `hollr.to/${profile.handle}`;
 
       // Patch the "go to" link in the sent screen
       const gotoEl = document.querySelector('.sent-goto');
-      if (gotoEl) gotoEl.href = `https://howlr.to/${profile.handle}`;
+      if (gotoEl) gotoEl.href = `https://hollr.to/${profile.handle}`;
 
       if (!profile.active) {
         // Handle exists but not configured — show a notice after welcome modal
-        console.warn('howlr: handle not yet configured with Resend key');
+        console.warn('hollr: handle not yet configured with Resend key');
       }
 
       return true;
     } catch (err) {
-      console.error('howlr: profile load failed', err);
+      console.error('hollr: profile load failed', err);
       return true; // fail open — let the canvas render
     }
   }
 
   /* ════════════════════════════════════════════════════════════════════════
-   * HOWLR — Settings API rewiring
+   * HOLLR — Settings API rewiring
    * The original canvas used PHP action-based settings.php.
-   * We reroute these to the howlr REST API using the session token stored in
-   * sessionStorage (set by the auth/verify page at howlr.to/auth/verify).
+   * We reroute these to the hollr REST API using the session token stored in
+   * sessionStorage (set by the auth/verify page at hollr.to/auth/verify).
    * ════════════════════════════════════════════════════════════════════════ */
   function getSessionToken() {
-    return sessionStorage.getItem('howlr_session') || null;
+    return sessionStorage.getItem('hollr_session') || null;
   }
 
   // Override openSettings to use the REST API
@@ -2566,7 +2566,7 @@
   // (already done via sed at file generation time)
 
   // Load profile (async — non-blocking for initial render)
-  loadHowlrProfile();
+  loadHollrProfile();
 
   applyTheme();
   applyTranslations();

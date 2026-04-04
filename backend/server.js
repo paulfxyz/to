@@ -1,7 +1,7 @@
 /**
- * server.js — howlr.to API Backend (v3.0.0)
+ * server.js — hollr.to API Backend (v3.0.0)
  *
- * Express server powering the howlr.to SaaS platform.
+ * Express server powering the hollr.to SaaS platform.
  *
  * Routes overview
  * ───────────────
@@ -29,8 +29,8 @@
  *   ENCRYPTION_SECRET    — server-side secret for AES-256 key encryption
  *   PLATFORM_RESEND_KEY  — Resend API key for magic-link emails
  *   PLATFORM_FROM_EMAIL  — "from" address for magic-link emails
- *   BASE_URL             — public URL of this server (e.g. https://api.howlr.to)
- *   FRONTEND_URL         — public URL of the frontend (e.g. https://howlr.to)
+ *   BASE_URL             — public URL of this server (e.g. https://api.hollr.to)
+ *   FRONTEND_URL         — public URL of the frontend (e.g. https://hollr.to)
  *   ALLOWED_ORIGINS      — comma-separated extra CORS origins
  */
 
@@ -82,8 +82,8 @@ const PORT = process.env.PORT || 3000;
 
 // Allowed CORS origins
 const allowedOrigins = [
-  'https://howlr.to',
-  'https://www.howlr.to',
+  'https://hollr.to',
+  'https://www.hollr.to',
   ...(process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean),
   // Allow localhost in dev
   ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5500'] : []),
@@ -132,7 +132,7 @@ function requireAuth(req, res, next) {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const HANDLE_RE = /^[a-zA-Z0-9_-]{2,30}$/;
-const RESERVED  = new Set(['admin','api','app','www','mail','root','support','help','about','legal','status','cdn','static','uploads','howlr']);
+const RESERVED  = new Set(['admin','api','app','www','mail','root','support','help','about','legal','status','cdn','static','uploads','hollr']);
 
 function isValidHandle(h) {
   return HANDLE_RE.test(h) && !RESERVED.has(h.toLowerCase());
@@ -167,7 +167,7 @@ app.post('/api/auth/magic-link', authLimiter, async (req, res) => {
 
   db.prepare('INSERT INTO magic_links (email, token, expires_at) VALUES (?, ?, ?)').run(email, token, expiresAt);
 
-  const frontendUrl = process.env.FRONTEND_URL || 'https://howlr.to';
+  const frontendUrl = process.env.FRONTEND_URL || 'https://hollr.to';
   const link = `${frontendUrl}/auth/verify?token=${token}`;
 
   try {
@@ -392,7 +392,7 @@ app.post('/api/send/:handle', sendLimiter, async (req, res) => {
 
   const user = db.prepare('SELECT * FROM users WHERE handle = ? COLLATE NOCASE').get(req.params.handle);
   if (!user)          return res.status(404).json({ error: 'Handle not found' });
-  if (!user.resend_key) return res.status(503).json({ error: 'This howlr instance is not configured yet' });
+  if (!user.resend_key) return res.status(503).json({ error: 'This hollr instance is not configured yet' });
   if (!user.email)    return res.status(503).json({ error: 'No destination email configured' });
 
   let resendKey;
@@ -402,7 +402,7 @@ app.post('/api/send/:handle', sendLimiter, async (req, res) => {
   try {
     const result = await forwardMessage({
       resendKey,
-      fromEmail:     user.from_email || 'howlr <noreply@up.paulfleury.com>',
+      fromEmail:     user.from_email || 'hollr <noreply@up.paulfleury.com>',
       toEmail:       user.email,
       senderContact: contact,
       message:       message.trim(),
@@ -437,5 +437,5 @@ app.use((err, _req, res, _next) => {
 // ── Start ─────────────────────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
-  console.log(`🐺 howlr API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+  console.log(`🐺 hollr API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
 });
